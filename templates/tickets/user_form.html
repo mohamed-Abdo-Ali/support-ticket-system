@@ -14,6 +14,12 @@
                     {% csrf_token %}
                     
                     <div class="mb-3">
+                        <label for="fullname" class="form-label">Full Name</label>
+                        <input type="text" name="fullname" id="fullname" class="form-control" value="{{ target_user.first_name|default:'' }}" placeholder="e.g. Ahmed Ali Saleh">
+                    </div>
+
+                    <div class="mb-3">
+
                         <label for="username" class="form-label">Username</label>
                         <input type="text" name="username" id="username" class="form-control" value="{{ target_user.username|default:'' }}" required>
                     </div>
@@ -29,11 +35,16 @@
                     </div>
                     
                     {% if user.is_superuser %}
-                    <div class="mb-3 form-check">
+                    <div class="mb-2 form-check">
                         <input type="checkbox" name="is_staff" id="is_staff" class="form-check-input" {% if target_user.is_staff %}checked{% endif %}>
-                        <label for="is_staff" class="form-check-label">Is Staff / Support Member</label>
+                        <label for="is_staff" class="form-check-label">Is Support Staff (Can Reply)</label>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" name="is_superuser" id="is_superuser" class="form-check-input" {% if target_user.is_superuser %}checked{% endif %}>
+                        <label for="is_superuser" class="form-check-label text-danger fw-bold">Is Manager (Full System Access)</label>
                     </div>
                     {% endif %}
+
                     
                     <div class="d-grid gap-2 mt-4">
                         <button type="submit" class="btn btn-primary">

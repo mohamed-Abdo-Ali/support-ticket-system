@@ -8,9 +8,9 @@ from .models import Reply
 def add_reply(request, ticket_pk):
     ticket = get_object_or_404(Ticket, pk=ticket_pk)
     
-    # Only staff can reply to tickets
-    if not request.user.is_staff:
-        messages.error(request, 'Only support staff can reply to tickets.')
+    # Only staff (non-superusers) can reply to tickets
+    if not request.user.is_staff or request.user.is_superuser:
+        messages.error(request, 'Only support staff (not managers) can reply to tickets.')
         return redirect('ticket_detail', pk=ticket_pk)
     
     if request.method == "POST":
@@ -32,24 +32,10 @@ def add_reply(request, ticket_pk):
 
 @login_required
 def edit_reply(request, pk):
+    # Reply editing is disabled as per user request
+    messages.error(request, 'Replies cannot be edited once posted.')
     reply = get_object_or_404(Reply, pk=pk)
-    
-    # Permissions: Only author or staff can edit
-    if reply.user != request.user and not request.user.is_staff:
-        messages.error(request, 'Access denied.')
-        return redirect('ticket_detail', pk=reply.ticket.pk)
-        
-    if request.method == "POST":
-        message = request.POST.get('message')
-        if not message or message.strip() == "":
-            messages.error(request, 'Reply cannot be empty.')
-        else:
-            reply.message = message
-            reply.save()
-            messages.success(request, 'Reply updated.')
-            return redirect('ticket_detail', pk=reply.ticket.pk)
-            
-    return render(request, 'replies/reply_edit.html', {'reply': reply})
+    return redirect('ticket_detail', pk=reply.ticket.pk)
 
 @login_required
 def delete_reply(request, pk):

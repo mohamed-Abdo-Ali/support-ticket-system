@@ -71,7 +71,7 @@
                         </span>
                     </td>
                     <td>{{ ticket.category }}</td>
-                    <td><span class="badge bg-light text-dark border">{{ ticket.created_by.username }}</span></td>
+                    <td><span class="badge bg-light text-dark border">{% if ticket.created_by.first_name %}{{ ticket.created_by.first_name }}{% else %}{{ ticket.created_by.username }}{% endif %}</span></td>
                     <td class="text-muted small">{{ ticket.created_at|date:"M d, Y H:i" }}</td>
                 </tr>
                 {% empty %}

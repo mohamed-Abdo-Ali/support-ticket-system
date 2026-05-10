@@ -14,6 +14,11 @@ def register(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            # Capture full name during registration
+            fullname = request.POST.get('fullname')
+            if fullname:
+                user.first_name = fullname
+                user.save()
             login(request, user)
             messages.success(request, 'Registration successful. Welcome!')
             return redirect('dashboard')
@@ -172,8 +177,8 @@ def delete_ticket(request, pk):
 
 @login_required
 def user_list(request):
-    if not request.user.is_staff:
-        messages.error(request, 'Access denied.')
+    if not request.user.is_superuser:
+        messages.error(request, 'Access denied. Only managers can manage users.')
         return redirect('dashboard')
     
     users = User.objects.annotate(
@@ -184,8 +189,8 @@ def user_list(request):
 
 @login_required
 def user_create(request):
-    if not request.user.is_staff:
-        messages.error(request, 'Access denied.')
+    if not request.user.is_superuser:
+        messages.error(request, 'Access denied. Only managers can manage users.')
         return redirect('dashboard')
     
     if request.method == "POST":
@@ -193,6 +198,7 @@ def user_create(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
         is_staff = request.POST.get('is_staff') == 'on'
+        is_superuser = request.POST.get('is_superuser') == 'on'
         
         if not username or not password:
             messages.error(request, 'Username and password are required.')
@@ -201,6 +207,8 @@ def user_create(request):
         else:
             user = User.objects.create_user(username=username, email=email, password=password)
             user.is_staff = is_staff
+            user.is_superuser = is_superuser
+            user.first_name = request.POST.get('fullname', '') # Store full name
             user.save()
             messages.success(request, f'User {username} created successfully.')
             return redirect('user_list')
@@ -209,8 +217,8 @@ def user_create(request):
 
 @login_required
 def user_edit(request, pk):
-    if not request.user.is_staff:
-        messages.error(request, 'Access denied.')
+    if not request.user.is_superuser:
+        messages.error(request, 'Access denied. Only managers can manage users.')
         return redirect('dashboard')
         
     target_user = get_object_or_404(User, pk=pk)
@@ -223,9 +231,11 @@ def user_edit(request, pk):
 
         target_user.username = username
         target_user.email = request.POST.get('email')
+        target_user.first_name = request.POST.get('fullname', '') # Update full name
         
         if request.user.is_superuser:
             target_user.is_staff = request.POST.get('is_staff') == 'on'
+            target_user.is_superuser = request.POST.get('is_superuser') == 'on'
         
         new_password = request.POST.get('password')
         if new_password:
