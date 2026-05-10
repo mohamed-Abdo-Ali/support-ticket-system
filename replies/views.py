@@ -28,25 +28,32 @@ def add_reply(request, ticket_pk):
             )
             messages.success(request, 'Reply added successfully.')
             
+            # Email Notification to Ticket Creator (simulated)
+            try:
+                from django.core.mail import send_mail
+                from django.conf import settings
+                send_mail(
+                    f'New Reply on Ticket #{ticket.id}',
+                    f'Hello,\n\nA support member has replied to your ticket: "{ticket.subject}".\n\nReply: {message}',
+                    settings.DEFAULT_FROM_EMAIL if hasattr(settings, 'DEFAULT_FROM_EMAIL') else 'noreply@support.com',
+                    [ticket.created_by.email],
+                    fail_silently=True,
+                )
+            except:
+                pass
+            
     return redirect('ticket_detail', pk=ticket_pk)
 
 @login_required
 def edit_reply(request, pk):
-    # Reply editing is disabled as per user request
-    messages.error(request, 'Replies cannot be edited once posted.')
+    # Reply editing is strictly disabled for all users
+    messages.error(request, 'Replies cannot be edited once posted for security and integrity.')
     reply = get_object_or_404(Reply, pk=pk)
     return redirect('ticket_detail', pk=reply.ticket.pk)
 
 @login_required
 def delete_reply(request, pk):
+    # Reply deletion is strictly disabled for all users
+    messages.error(request, 'Replies cannot be deleted once posted to maintain audit trail.')
     reply = get_object_or_404(Reply, pk=pk)
-    ticket_pk = reply.ticket.pk
-    
-    # Permissions: Only author or staff can delete
-    if reply.user != request.user and not request.user.is_staff:
-        messages.error(request, 'Access denied.')
-    else:
-        reply.delete()
-        messages.success(request, 'Reply deleted.')
-        
-    return redirect('ticket_detail', pk=ticket_pk)
+    return redirect('ticket_detail', pk=reply.ticket.pk)

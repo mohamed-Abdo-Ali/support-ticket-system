@@ -1,5 +1,7 @@
 from .models import Ticket
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404 
 from replies.models import Reply
 from django.contrib import messages
@@ -33,11 +35,19 @@ def dashboard(request):
     else:
         base_qs = Ticket.objects.filter(created_by=request.user)
         
+    # Chart Data
+    category_data = base_qs.values('category').annotate(count=Count('id'))
+    status_data = base_qs.values('status').annotate(count=Count('id'))
+        
     context = {
         'total_tickets': base_qs.count(), 
         'open_tickets': base_qs.filter(status='Open').count(), 
         'resolved_tickets': base_qs.filter(status='Resolved').count(), 
         'high_priority_tickets': base_qs.filter(priority='High').count(), 
+        'category_labels': [item['category'] for item in category_data],
+        'category_counts': [item['count'] for item in category_data],
+        'status_labels': [item['status'] for item in status_data],
+        'status_counts': [item['count'] for item in status_data],
     }
     return render(request, 'tickets/dashboard.html', context)
 
@@ -75,11 +85,17 @@ def ticket_list(request):
 
 @login_required
 def create_ticket(request):
+    # Only regular users (non-staff) can create tickets
+    if request.user.is_staff:
+        messages.error(request, 'Support staff and managers cannot create tickets.')
+        return redirect('dashboard')
     if request.method == "POST":
         subject = request.POST.get('subject')
         description = request.POST.get('description')
         priority = request.POST.get('priority')
         category = request.POST.get('category')
+        
+        attachment = request.FILES.get('attachment')
         
         if not subject or len(subject) < 5:
             messages.error(request, 'Subject must be at least 5 characters.')
@@ -90,9 +106,23 @@ def create_ticket(request):
             description=description,
             priority=priority,
             category=category,
-            created_by=request.user
+            created_by=request.user,
+            attachment=attachment
         )
         messages.success(request, 'Ticket created successfully.')
+        
+        # Email Notification (simulated)
+        try:
+            send_mail(
+                f'New Ticket: {subject}',
+                f'A new ticket has been opened by {request.user.username}.\n\nDescription: {description}',
+                settings.DEFAULT_FROM_EMAIL if hasattr(settings, 'DEFAULT_FROM_EMAIL') else 'noreply@support.com',
+                ['staff@support.com'], # In real world, send to all staff
+                fail_silently=True,
+            )
+        except:
+            pass
+
         return redirect('ticket_list')
     return render(request, 'tickets/ticket_form.html')
 
@@ -274,4 +304,17 @@ def user_detail(request, pk):
     return render(request, 'tickets/user_detail.html', {
         'viewed_user': viewed_user,
         'user_tickets': user_tickets
-    })
+    })
+
+@login_required
+def profile(request):
+    if request.method == "POST":
+        request.user.first_name = request.POST.get('fullname')
+        request.user.email = request.POST.get('email')
+        request.user.save()
+        messages.success(request, 'Profile updated successfully.')
+        return redirect('profile')
+    return render(request, 'tickets/profile.html')
+
+
+

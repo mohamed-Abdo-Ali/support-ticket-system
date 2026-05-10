@@ -10,7 +10,7 @@
                 <h2 class="card-title mb-4">{% if ticket %}Edit Ticket #{{ ticket.id }}{% else %}Create New Support Ticket{% endif %}</h2>
                 <hr>
                 
-                <form method="post">
+                <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     
                     <div class="mb-3">
@@ -24,6 +24,11 @@
                         <label class="form-label fw-bold">Description</label>
                         <textarea name="description" class="form-control" rows="5" required
                                   {% if user.is_staff %}readonly{% endif %}>{{ ticket.description|default:'' }}</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Attachment (Optional Image)</label>
+                        <input type="file" name="attachment" class="form-control" accept="image/*" {% if user.is_staff %}disabled{% endif %}>
                     </div>
 
                     <div class="row">

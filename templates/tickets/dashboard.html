@@ -1,37 +1,171 @@
 {% extends 'base.html' %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANG %}
 
-{% block title %}Dashboard - Support System{% endblock %}
+{% block title %}{% if CURRENT_LANG == 'ar' %}لوحة التحكم{% else %}Dashboard{% endif %} - Support CORE{% endblock %}
 
 {% block content %}
-<div class="row text-center mb-5 mt-4">
+<div class="row g-4 mb-4">
+    <!-- Stat Cards -->
     <div class="col-md-3">
-        <div class="card shadow-sm p-3">
-            <h5>Total Tickets</h5>
-            <h2 class="text-primary">{{ total_tickets }}</h2>
+        <div class="card p-3 border-start border-4 border-primary">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary bg-opacity-10 p-3 rounded-3 {% if CURRENT_LANG == 'ar' %}ms-3{% else %}me-3{% endif %} text-primary">
+                    <i class="bi bi-collection-fill fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-0 small text-uppercase fw-bold">
+                        {% if CURRENT_LANG == 'ar' %}إجمالي التذاكر{% else %}Total Tickets{% endif %}
+                    </h6>
+                    <h3 class="fw-bold mb-0">{{ total_tickets }}</h3>
+                </div>
+            </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card shadow-sm p-3 border-info">
-            <h5>Open</h5>
-            <h2 class="text-info">{{ open_tickets }}</h2>
+        <div class="card p-3 border-start border-4 border-info">
+            <div class="d-flex align-items-center">
+                <div class="bg-info bg-opacity-10 p-3 rounded-3 {% if CURRENT_LANG == 'ar' %}ms-3{% else %}me-3{% endif %} text-info">
+                    <i class="bi bi-envelope-open-fill fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-0 small text-uppercase fw-bold">
+                        {% if CURRENT_LANG == 'ar' %}مفتوحة{% else %}Open{% endif %}
+                    </h6>
+                    <h3 class="fw-bold mb-0">{{ open_tickets }}</h3>
+                </div>
+            </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card shadow-sm p-3 border-success">
-            <h5>Resolved</h5>
-            <h2 class="text-success">{{ resolved_tickets }}</h2>
+        <div class="card p-3 border-start border-4 border-success">
+            <div class="d-flex align-items-center">
+                <div class="bg-success bg-opacity-10 p-3 rounded-3 {% if CURRENT_LANG == 'ar' %}ms-3{% else %}me-3{% endif %} text-success">
+                    <i class="bi bi-check-circle-fill fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-0 small text-uppercase fw-bold">
+                        {% if CURRENT_LANG == 'ar' %}تم حلها{% else %}Resolved{% endif %}
+                    </h6>
+                    <h3 class="fw-bold mb-0">{{ resolved_tickets }}</h3>
+                </div>
+            </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card shadow-sm p-3 border-danger">
-            <h5>High Priority</h5>
-            <h2 class="text-danger">{{ high_priority_tickets }}</h2>
+        <div class="card p-3 border-start border-4 border-danger">
+            <div class="d-flex align-items-center">
+                <div class="bg-danger bg-opacity-10 p-3 rounded-3 {% if CURRENT_LANG == 'ar' %}ms-3{% else %}me-3{% endif %} text-danger">
+                    <i class="bi bi-fire fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-0 small text-uppercase fw-bold">
+                        {% if CURRENT_LANG == 'ar' %}عالية الأهمية{% else %}Critical{% endif %}
+                    </h6>
+                    <h3 class="fw-bold mb-0">{{ high_priority_tickets }}</h3>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="d-grid gap-3 d-md-flex justify-content-md-center mt-5">
-    <a href="{% url 'ticket_list' %}" class="btn btn-dark btn-lg px-5 shadow">View All Tickets</a>
-    <a href="{% url 'create_ticket' %}" class="btn btn-primary btn-lg px-5 shadow">Create New Ticket</a>
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-0 pt-4 px-4">
+                <h6 class="fw-bold mb-0">
+                    <i class="bi bi-bar-chart-fill me-2 ms-2 text-primary"></i>
+                    {% if CURRENT_LANG == 'ar' %}نظرة عامة على النشاط{% else %}System Activity Overview{% endif %}
+                </h6>
+            </div>
+            <div class="card-body p-4">
+                <div style="position: relative; height:300px; width:100%">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-0 pt-4 px-4">
+                <h6 class="fw-bold mb-0">
+                    <i class="bi bi-pie-chart-fill me-2 ms-2 text-primary"></i>
+                    {% if CURRENT_LANG == 'ar' %}حالة التذاكر{% else %}Ticket Status{% endif %}
+                </h6>
+            </div>
+            <div class="card-body p-4">
+                <div style="position: relative; height:300px; width:100%">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<div class="d-flex justify-content-center gap-3 mt-5 mb-5">
+    <a href="{% url 'ticket_list' %}" class="btn btn-primary px-5 shadow-sm">
+        <i class="bi bi-list-task {% if CURRENT_LANG == 'ar' %}ms-2{% else %}me-2{% endif %}"></i>
+        {% if CURRENT_LANG == 'ar' %}استعراض التذاكر{% else %}Browse Tickets{% endif %}
+    </a>
+    {% if not user.is_staff %}
+    <a href="{% url 'create_ticket' %}" class="btn btn-outline-primary px-5 shadow-sm">
+        <i class="bi bi-plus-lg {% if CURRENT_LANG == 'ar' %}ms-2{% else %}me-2{% endif %}"></i>
+        {% if CURRENT_LANG == 'ar' %}طلب دعم جديد{% else %}New Support Request{% endif %}
+    </a>
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    Chart.defaults.font.family = "'Outfit', sans-serif";
+    Chart.defaults.color = '#64748b';
+
+    // Status Chart
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {% if CURRENT_LANG == 'ar' %}['مفتوحة', 'قيد التنفيذ', 'تم حلها', 'مغلقة']{% else %}{{ status_labels|safe }}{% endif %},
+            datasets: [{
+                data: {{ status_counts|safe }},
+                backgroundColor: ['#3b82f6', '#94a3b8', '#10b981', '#f43f5e'],
+                hoverOffset: 12,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, padding: 25 } }
+            },
+            cutout: '70%'
+        }
+    });
+
+    // Category Chart
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    new Chart(categoryCtx, {
+        type: 'bar',
+        data: {
+            labels: {% if CURRENT_LANG == 'ar' %}['تقني', 'فواتير', 'عام']{% else %}{{ category_labels|safe }}{% endif %},
+            datasets: [{
+                label: '{% if CURRENT_LANG == 'ar' %}عدد التذاكر{% else %}Tickets Received{% endif %}',
+                data: {{ category_counts|safe }},
+                backgroundColor: '#3b82f6',
+                borderRadius: 8,
+                maxBarThickness: 45
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                x: { grid: { display: false } }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+</script>
 {% endblock %}

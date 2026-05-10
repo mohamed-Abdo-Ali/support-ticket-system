@@ -10,6 +10,14 @@
                 <h2 class="text-center mb-4">Login</h2>
                 <form method="post">
                     {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger shadow-sm">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                     {% for field in form %}
                         <div class="mb-3">
                             <label class="form-label">{{ field.label }}</label>

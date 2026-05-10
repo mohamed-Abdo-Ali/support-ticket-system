@@ -1,121 +1,164 @@
 {% extends 'base.html' %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANG %}
 
-{% block title %}{{ ticket.subject }} - Support System{% endblock %}
+{% block title %}{% if CURRENT_LANG == 'ar' %}تذكرة{% else %}Ticket{% endif %} #{{ ticket.id }} - Support CORE{% endblock %}
 
 {% block content %}
-<nav aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="{% url 'ticket_list' %}">Tickets</a></li>
-    <li class="breadcrumb-item active" aria-current="page">{{ ticket.subject }}</li>
-  </ol>
-</nav>
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-start mb-4">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-2">
+                        <li class="breadcrumb-item"><a href="{% url 'ticket_list' %}" class="text-decoration-none">{% if CURRENT_LANG == 'ar' %}التذاكر{% else %}Tickets{% endif %}</a></li>
+                        <li class="breadcrumb-item active">#{{ ticket.id }}</li>
+                    </ol>
+                </nav>
+                <h2 class="fw-bold">{{ ticket.subject }}</h2>
+                <div class="d-flex gap-3 text-muted small">
+                    <span><i class="bi bi-person-circle me-1 ms-1"></i> {% if ticket.created_by.first_name %}{{ ticket.created_by.first_name }}{% else %}{{ ticket.created_by.username }}{% endif %}</span>
+                    <span><i class="bi bi-folder-fill me-1 ms-1"></i> 
+                        {% if CURRENT_LANG == 'ar' %}
+                            {% if ticket.category == 'Technical' %}تقني{% elif ticket.category == 'Billing' %}فواتير{% else %}عام{% endif %}
+                        {% else %}
+                            {{ ticket.category }}
+                        {% endif %}
+                    </span>
+                    <span><i class="bi bi-calendar-event me-1 ms-1"></i> {{ ticket.created_at|date:"M d, Y H:i" }}</span>
+                </div>
+            </div>
+            <div class="{% if CURRENT_LANG == 'ar' %}text-start{% else %}text-end{% endif %}">
+                <span class="badge {% if ticket.status == 'Open' %}bg-primary{% elif ticket.status == 'In Progress' %}bg-info{% elif ticket.status == 'Resolved' %}bg-success{% else %}bg-secondary{% endif %} rounded-pill px-4 py-2 fs-6 shadow-sm mb-2 d-inline-block">
+                    {% if CURRENT_LANG == 'ar' %}
+                        {% if ticket.status == 'Open' %}مفتوحة{% elif ticket.status == 'In Progress' %}قيد التنفيذ{% elif ticket.status == 'Resolved' %}تم حلها{% else %}مغلقة{% endif %}
+                    {% else %}
+                        {{ ticket.status }}
+                    {% endif %}
+                </span>
+                <br>
+                <span class="badge {% if ticket.priority == 'High' %}bg-danger bg-opacity-10 text-danger{% elif ticket.priority == 'Medium' %}bg-warning bg-opacity-10 text-warning{% else %}bg-info bg-opacity-10 text-info{% endif %} px-3">
+                    {% if CURRENT_LANG == 'ar' %}
+                        {% if ticket.priority == 'High' %}أولوية عالية{% elif ticket.priority == 'Medium' %}أولوية متوسطة{% else %}أولوية منخفضة{% endif %}
+                    {% else %}
+                        {{ ticket.priority }} Priority
+                    {% endif %}
+                </span>
+            </div>
+        </div>
 
-<div class="card mb-4 shadow-sm">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h3 class="mb-0">{{ ticket.subject }}</h3>
-        <div>
-            <span class="badge {% if ticket.status == 'Open' %}bg-primary{% elif ticket.status == 'In Progress' %}bg-secondary{% elif ticket.status == 'Resolved' %}bg-success{% else %}bg-dark{% endif %}">
-                {{ ticket.status }}
-            </span>
-            <span class="badge {% if ticket.priority == 'High' %}bg-danger{% elif ticket.priority == 'Medium' %}bg-warning text-dark{% else %}bg-info text-dark{% endif %} ms-1">
-                {{ ticket.priority }}
-            </span>
+        <!-- Description Card -->
+        <div class="card border-0 shadow-sm mb-5">
+            <div class="card-body p-4">
+                <h6 class="fw-bold text-uppercase small text-muted mb-3">{% if CURRENT_LANG == 'ar' %}وصف المشكلة{% else %}Issue Description{% endif %}</h6>
+                <div class="bg-light p-4 rounded-3" style="font-size: 1.1rem; border-left: 5px solid #3b82f6; border-right: {% if CURRENT_LANG == 'ar' %}5px solid #3b82f6{% else %}0{% endif %};">
+                    {{ ticket.description|linebreaks }}
+                </div>
+                
+                {% if ticket.attachment %}
+                <div class="mt-4">
+                    <h6 class="fw-bold text-uppercase small text-muted mb-2">{% if CURRENT_LANG == 'ar' %}المرفقات{% else %}Attachment{% endif %}</h6>
+                    <div class="d-inline-block border rounded p-2 bg-white shadow-sm">
+                        <a href="{{ ticket.attachment.url }}" target="_blank">
+                            <img src="{{ ticket.attachment.url }}" class="rounded shadow-sm" style="max-width: 250px;" alt="Attachment">
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if user.is_staff %}
+                <div class="mt-4 pt-3 border-top d-flex gap-2">
+                    {% if ticket.status != 'Closed' %}
+                    <a href="{% url 'edit_ticket' ticket.pk %}" class="btn btn-warning btn-sm">{% if CURRENT_LANG == 'ar' %}تحديث الحالة{% else %}Update Progress{% endif %}</a>
+                    {% else %}
+                    <a href="{% url 'delete_ticket' ticket.pk %}" class="btn btn-danger btn-sm" onclick="return confirm('{% if CURRENT_LANG == 'ar' %}هل أنت متأكد من أرشفة هذه التذكرة؟{% else %}Archive this ticket?{% endif %}')">{% if CURRENT_LANG == 'ar' %}حذف السجل{% else %}Delete Record{% endif %}</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
         </div>
-    </div>
-    <div class="card-body">
-        <p class="lead">{{ ticket.description }}</p>
-        <div class="text-muted small">
-            Category: {{ ticket.category }} | 
-            Created by: {% if ticket.created_by.first_name %}{{ ticket.created_by.first_name }}{% else %}{{ ticket.created_by.username }}{% endif %} | 
-            {{ ticket.created_at|date:"M d, Y H:i" }}
-        </div>
-        
-        <!-- Admin/Staff Controls -->
-        {% if user.is_staff %}
-        <hr>
-        <div class="d-flex gap-2">
-            {% if ticket.status != 'Closed' %}
-            <a href="{% url 'edit_ticket' ticket.pk %}" class="btn btn-sm btn-warning">Edit Ticket</a>
-            {% else %}
-            <a href="{% url 'delete_ticket' ticket.pk %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this ticket?')">Delete Ticket</a>
+
+        <!-- Conversation -->
+        <h5 class="fw-bold mb-4 d-flex align-items-center">
+            <i class="bi bi-chat-left-text-fill text-primary me-2 ms-2"></i>
+            {% if CURRENT_LANG == 'ar' %}سجل المحادثة{% else %}Support Thread{% endif %}
+        </h5>
+
+        <div class="mb-5">
+            {% for reply in page_obj %}
+            <div class="d-flex mb-4 {% if reply.user.is_staff %}{% if CURRENT_LANG == 'ar' %}justify-content-end{% else %}justify-content-start{% endif %}{% else %}{% if CURRENT_LANG == 'ar' %}justify-content-start{% else %}justify-content-end{% endif %}{% endif %}">
+                <div class="{% if reply.user.is_staff %}bg-white border{% else %}bg-primary text-white{% endif %} p-3 rounded-4 shadow-sm" style="max-width: 75%;">
+                    <div class="d-flex justify-content-between align-items-center mb-2 gap-4">
+                        <small class="fw-bold {% if reply.user.is_staff %}text-primary{% else %}text-white-50{% endif %}">
+                            {% if reply.user.first_name %}{{ reply.user.first_name }}{% else %}{{ reply.user.username }}{% endif %}
+                            {% if reply.user.is_staff %}<span class="badge bg-primary ms-1 me-1" style="font-size: 8px;">{% if CURRENT_LANG == 'ar' %}موظف{% else %}STAFF{% endif %}</span>{% endif %}
+                        </small>
+                        <small class="{% if reply.user.is_staff %}text-muted{% else %}text-white-50{% endif %}" style="font-size: 10px;">{{ reply.created_at|timesince }} {% if CURRENT_LANG == 'ar' %}مضت{% else %}ago{% endif %}</small>
+                    </div>
+                    <div class="mb-0">{{ reply.message|linebreaksbr }}</div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-5 bg-white rounded-3 shadow-sm mb-4">
+                <i class="bi bi-chat-dots fs-1 text-muted opacity-25"></i>
+                <p class="text-muted mt-3 mb-0">{% if CURRENT_LANG == 'ar' %}لا توجد رسائل في هذه المحادثة بعد.{% else %}No messages in this thread yet.{% endif %}</p>
+            </div>
+            {% endfor %}
+
+            <!-- Reply Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav class="mb-4">
+                <ul class="pagination pagination-sm justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">{% if CURRENT_LANG == 'ar' %}السابق{% else %}Previous{% endif %}</a></li>
+                    {% endif %}
+                    <li class="page-item disabled"><span class="page-link">{% if CURRENT_LANG == 'ar' %}صفحة{% else %}Page{% endif %} {{ page_obj.number }}</span></li>
+                    {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">{% if CURRENT_LANG == 'ar' %}التالي{% else %}Next{% endif %}</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
             {% endif %}
         </div>
-        {% endif %}
 
-
-
-    </div>
-</div>
-
-<h4 class="mb-3">Replies</h4>
-<div class="list-group mb-3 shadow-sm">
-    {% for reply in page_obj %}
-    <div class="list-group-item {% if reply.user.is_staff %}bg-light{% endif %}">
-        <div class="d-flex w-100 justify-content-between align-items-center">
-            <h6 class="mb-1 fw-bold {% if reply.user.is_staff %}text-danger{% else %}text-primary{% endif %}">
-                {% if reply.user.first_name %}{{ reply.user.first_name }}{% else %}{{ reply.user.username }}{% endif %}
-                {% if reply.user.is_staff %}
-                <span class="badge bg-danger ms-1" style="font-size: 0.7rem;">Support Staff</span>
-                {% endif %}
-            </h6>
-            <small class="text-muted">{{ reply.created_at|timesince }} ago</small>
-        </div>
-        <p class="mb-1 mt-2">{{ reply.message }}</p>
-        {% if reply.user == user or user.is_staff %}
-        <div class="mt-2 text-end">
-            <a href="{% url 'replies:delete_reply' reply.pk %}" class="text-danger text-decoration-none small" onclick="return confirm('Delete this reply?')">Delete</a>
-        </div>
-        {% endif %}
-
-    </div>
-    {% empty %}
-    <div class="list-group-item text-center py-3 text-muted">
-        No replies yet.
-    </div>
-    {% endfor %}
-</div>
-
-<!-- Pagination for Replies (Bonus E) -->
-{% if page_obj.has_other_pages %}
-<nav aria-label="Reply pagination" class="mb-4">
-    <ul class="pagination pagination-sm justify-content-end">
-        {% if page_obj.has_previous %}
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
-        {% endif %}
-        <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
-        {% if page_obj.has_next %}
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
-        {% endif %}
-    </ul>
-</nav>
-{% endif %}
-
-{% if ticket.status != 'Closed' %}
-    {% if user.is_staff and not user.is_superuser %}
-    <div class="card p-3 shadow-sm mb-5">
-        <h5>Add a Reply</h5>
-        <form action="{% url 'replies:add_reply' ticket.pk %}" method="post">
-            {% csrf_token %}
-            <div class="mb-3">
-                <textarea name="message" class="form-control" rows="3" placeholder="Write your reply here..." required></textarea>
+        <!-- Add Reply Form -->
+        {% if ticket.status != 'Closed' %}
+            {% if user.is_staff and not user.is_superuser %}
+            <div class="card border-0 shadow-sm mb-5">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-3">{% if CURRENT_LANG == 'ar' %}كتابة رد{% else %}Compose Reply{% endif %}</h6>
+                    <form action="{% url 'replies:add_reply' ticket.pk %}" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <textarea name="message" class="form-control bg-light border-0" rows="4" placeholder="{% if CURRENT_LANG == 'ar' %}اكتب ردك الاحترافي هنا...{% else %}Your professional response...{% endif %}" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary px-4">
+                            {% if CURRENT_LANG == 'ar' %}إرسال الرد{% else %}Send Response{% endif %} <i class="bi bi-send ms-2 me-2"></i>
+                        </button>
+                    </form>
+                </div>
             </div>
-            <button type="submit" class="btn btn-success px-4">Post Reply</button>
-        </form>
+            {% elif user.is_superuser %}
+            <div class="alert alert-secondary d-flex align-items-center">
+                <i class="bi bi-info-circle-fill fs-4 me-3 ms-3"></i>
+                <div>
+                    {% if CURRENT_LANG == 'ar' %}بصفتك مديراً، أنت في وضع <strong>العرض فقط</strong>. الموظفون المختصون فقط هم من يمكنهم الرد.{% else %}As a Manager, you are in <strong>View Only</strong> mode. Only assigned support staff can reply.{% endif %}
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-info d-flex align-items-center">
+                <i class="bi bi-hourglass-split fs-4 me-3 ms-3"></i>
+                <div>
+                    {% if CURRENT_LANG == 'ar' %}مهندسو الدعم لدينا يراجعون تذكرتك حالياً. سيتم إخطارك بأي تحديثات.{% else %}Our support engineers are reviewing your ticket. You'll be notified of any updates.{% endif %}
+                </div>
+            </div>
+            {% endif %}
+        {% else %}
+        <div class="alert alert-dark text-center py-4">
+            <i class="bi bi-lock-fill me-2 ms-2"></i> {% if CURRENT_LANG == 'ar' %}هذه التذكرة مغلقة ومؤرشفة. لا يمكن اتخاذ أي إجراء آخر.{% else %}This ticket is closed and archived. No further action is possible.{% endif %}
+        </div>
+        {% endif %}
     </div>
-    {% elif user.is_superuser %}
-    <div class="alert alert-secondary shadow-sm mb-5">
-        <i class="bi bi-person-badge me-2"></i> As a Manager, you can monitor this ticket, but only support staff can post replies.
-    </div>
-    {% else %}
-    <div class="alert alert-info shadow-sm mb-5">
-        Waiting for support staff to respond. You will be notified when a reply is posted.
-    </div>
-    {% endif %}
-
-{% else %}
-<div class="alert alert-warning shadow-sm mb-5">
-    <i class="bi bi-info-circle me-2"></i> This ticket is closed and cannot receive more replies.
 </div>
-{% endif %}
-
 {% endblock %}

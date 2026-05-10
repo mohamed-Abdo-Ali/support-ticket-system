@@ -1,82 +1,118 @@
 {% extends 'base.html' %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANG %}
 
-{% block title %}Tickets List - Support System{% endblock %}
+{% block title %}{% if CURRENT_LANG == 'ar' %}مستودع التذاكر{% else %}Ticket Repository{% endif %} - Support CORE{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Tickets List</h2>
-    <a href="{% url 'create_ticket' %}" class="btn btn-primary shadow-sm">Create New Ticket</a>
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+        <h2 class="fw-bold mb-0">{% if CURRENT_LANG == 'ar' %}مستودع التذاكر{% else %}Ticket Repository{% endif %}</h2>
+        <p class="text-muted mb-0">{% if CURRENT_LANG == 'ar' %}استعرض وإدارة جميع طلبات الدعم{% else %}Browse and manage all support interactions{% endif %}</p>
+    </div>
+    {% if not user.is_staff %}
+    <a href="{% url 'create_ticket' %}" class="btn btn-primary shadow-sm">
+        <i class="bi bi-plus-lg {% if CURRENT_LANG == 'ar' %}ms-2{% else %}me-2{% endif %}"></i>
+        {% if CURRENT_LANG == 'ar' %}تذكرة جديدة{% else %}New Ticket{% endif %}
+    </a>
+    {% endif %}
 </div>
 
-<!-- Search & Filters (Bonus B) -->
-<div class="card mb-4 shadow-sm">
-    <div class="card-body">
-        <form method="GET" class="row g-3">
-            <div class="col-md-4">
-                <input type="text" name="q" class="form-control" placeholder="Search by subject or description..." value="{{ query|default:'' }}">
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body p-4">
+        <form method="GET" class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label small fw-bold text-muted">{% if CURRENT_LANG == 'ar' %}بحث سريع{% else %}Quick Search{% endif %}</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="q" class="form-control border-start-0" placeholder="{% if CURRENT_LANG == 'ar' %}الموضوع أو كلمة مفتاحية...{% else %}Subject or Keyword...{% endif %}" value="{{ query|default:'' }}">
+                </div>
             </div>
             <div class="col-md-3">
+                <label class="form-label small fw-bold text-muted">{% if CURRENT_LANG == 'ar' %}الحالة{% else %}Status{% endif %}</label>
                 <select name="status" class="form-select">
-                    <option value="">All Statuses</option>
-                    <option value="Open" {% if status_filter == 'Open' %}selected{% endif %}>Open</option>
-                    <option value="In Progress" {% if status_filter == 'In Progress' %}selected{% endif %}>In Progress</option>
-                    <option value="Resolved" {% if status_filter == 'Resolved' %}selected{% endif %}>Resolved</option>
-                    <option value="Closed" {% if status_filter == 'Closed' %}selected{% endif %}>Closed</option>
+                    <option value="">{% if CURRENT_LANG == 'ar' %}جميع الحالات{% else %}All Statuses{% endif %}</option>
+                    <option value="Open" {% if status_filter == 'Open' %}selected{% endif %}>{% if CURRENT_LANG == 'ar' %}مفتوحة{% else %}Open{% endif %}</option>
+                    <option value="In Progress" {% if status_filter == 'In Progress' %}selected{% endif %}>{% if CURRENT_LANG == 'ar' %}قيد التنفيذ{% else %}In Progress{% endif %}</option>
+                    <option value="Resolved" {% if status_filter == 'Resolved' %}selected{% endif %}>{% if CURRENT_LANG == 'ar' %}تم حلها{% else %}Resolved{% endif %}</option>
+                    <option value="Closed" {% if status_filter == 'Closed' %}selected{% endif %}>{% if CURRENT_LANG == 'ar' %}مغلقة{% else %}Closed{% endif %}</option>
                 </select>
             </div>
-            <div class="col-md-3">
-                <select name="priority" class="form-select">
-                    <option value="">All Priorities</option>
-                    <option value="Low" {% if priority_filter == 'Low' %}selected{% endif %}>Low</option>
-                    <option value="Medium" {% if priority_filter == 'Medium' %}selected{% endif %}>Medium</option>
-                    <option value="High" {% if priority_filter == 'High' %}selected{% endif %}>High</option>
-                </select>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-dark w-100">{% if CURRENT_LANG == 'ar' %}تصفية{% else %}Filter{% endif %}</button>
             </div>
-            <div class="col-md-2 d-grid">
-                <button type="submit" class="btn btn-dark">Filter</button>
+            <div class="col-md-2">
+                <a href="{% url 'ticket_list' %}" class="btn btn-outline-secondary w-100">{% if CURRENT_LANG == 'ar' %}إعادة تعيين{% else %}Reset{% endif %}</a>
             </div>
         </form>
     </div>
 </div>
 
-<div class="card shadow-sm mb-4">
-    <div class="card-body p-0">
-        <table class="table table-hover mb-0">
-            <thead class="table-light">
+<div class="card overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
                 <tr>
-                    <th>Subject</th>
-                    <th>Priority</th>
-                    <th>Status</th>
-                    <th>Category</th>
-                    <th>Created By</th>
-                    <th>Created At</th>
+                    <th class="ps-4">{% if CURRENT_LANG == 'ar' %}التذكرة{% else %}Ticket{% endif %}</th>
+                    <th>{% if CURRENT_LANG == 'ar' %}الأولوية{% else %}Priority{% endif %}</th>
+                    <th>{% if CURRENT_LANG == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+                    <th>{% if CURRENT_LANG == 'ar' %}التصنيف{% else %}Category{% endif %}</th>
+                    <th>{% if CURRENT_LANG == 'ar' %}المالك{% else %}Owner{% endif %}</th>
+                    <th class="{% if CURRENT_LANG == 'ar' %}text-start ps-4{% else %}text-end pe-4{% endif %}">{% if CURRENT_LANG == 'ar' %}تاريخ الإنشاء{% else %}Created At{% endif %}</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="border-top-0">
                 {% for ticket in page_obj %}
-                <tr>
-                    <td>
-                        <a href="{% url 'ticket_detail' ticket.pk %}" class="text-decoration-none fw-bold">
-                            {{ ticket.subject }}
-                        </a>
+                <tr onclick="window.location='{% url 'ticket_detail' ticket.pk %}'" style="cursor: pointer;">
+                    <td class="ps-4 py-3">
+                        <div class="fw-bold text-dark">{{ ticket.subject }}</div>
+                        <div class="text-muted small">#{{ ticket.id }}</div>
+                        {% if ticket.is_late %}
+                        <span class="badge bg-danger text-uppercase" style="font-size: 10px;">{% if CURRENT_LANG == 'ar' %}متأخرة{% else %}Overdue{% endif %}</span>
+                        {% endif %}
                     </td>
                     <td>
-                        <span class="badge {% if ticket.priority == 'High' %}bg-danger{% elif ticket.priority == 'Medium' %}bg-warning text-dark{% else %}bg-info text-dark{% endif %}">
-                            {{ ticket.priority }}
+                        <span class="badge {% if ticket.priority == 'High' %}bg-danger bg-opacity-10 text-danger{% elif ticket.priority == 'Medium' %}bg-warning bg-opacity-10 text-warning{% else %}bg-info bg-opacity-10 text-info{% endif %}">
+                            {% if CURRENT_LANG == 'ar' %}
+                                {% if ticket.priority == 'High' %}عالية{% elif ticket.priority == 'Medium' %}متوسطة{% else %}منخفضة{% endif %}
+                            {% else %}
+                                {{ ticket.priority }}
+                            {% endif %}
                         </span>
                     </td>
                     <td>
-                        <span class="badge {% if ticket.status == 'Open' %}bg-primary{% elif ticket.status == 'In Progress' %}bg-secondary{% elif ticket.status == 'Resolved' %}bg-success{% else %}bg-dark{% endif %}">
-                            {{ ticket.status }}
+                        <span class="badge {% if ticket.status == 'Open' %}bg-primary{% elif ticket.status == 'In Progress' %}bg-info{% elif ticket.status == 'Resolved' %}bg-success{% else %}bg-secondary{% endif %}">
+                            {% if CURRENT_LANG == 'ar' %}
+                                {% if ticket.status == 'Open' %}مفتوحة{% elif ticket.status == 'In Progress' %}قيد التنفيذ{% elif ticket.status == 'Resolved' %}تم حلها{% else %}مغلقة{% endif %}
+                            {% else %}
+                                {{ ticket.status }}
+                            {% endif %}
                         </span>
                     </td>
-                    <td>{{ ticket.category }}</td>
-                    <td><span class="badge bg-light text-dark border">{% if ticket.created_by.first_name %}{{ ticket.created_by.first_name }}{% else %}{{ ticket.created_by.username }}{% endif %}</span></td>
-                    <td class="text-muted small">{{ ticket.created_at|date:"M d, Y H:i" }}</td>
+                    <td><span class="text-muted">
+                        {% if CURRENT_LANG == 'ar' %}
+                            {% if ticket.category == 'Technical' %}تقني{% elif ticket.category == 'Billing' %}فواتير{% else %}عام{% endif %}
+                        {% else %}
+                            {{ ticket.category }}
+                        {% endif %}
+                    </span></td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="bg-secondary bg-opacity-10 rounded-circle text-center me-2 ms-2" style="width: 24px; height: 24px; line-height: 24px; font-size: 10px; font-weight: bold;">
+                                {{ ticket.created_by.username|first|upper }}
+                            </div>
+                            <span class="small">{% if ticket.created_by.first_name %}{{ ticket.created_by.first_name }}{% else %}{{ ticket.created_by.username }}{% endif %}</span>
+                        </div>
+                    </td>
+                    <td class="{% if CURRENT_LANG == 'ar' %}text-start ps-4{% else %}text-end pe-4{% endif %} small text-muted">{{ ticket.created_at|date:"M d, Y" }}</td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="text-center py-4">No tickets found matching your criteria.</td>
+                    <td colspan="6" class="text-center py-5 text-muted">
+                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                        {% if CURRENT_LANG == 'ar' %}لا توجد تذاكر تطابق معايير البحث.{% else %}No tickets match your selection.{% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -84,20 +120,16 @@
     </div>
 </div>
 
-<!-- Pagination (Bonus E) -->
+<!-- Pagination -->
 {% if page_obj.has_other_pages %}
-<nav aria-label="Page navigation">
+<nav class="mt-4">
     <ul class="pagination justify-content-center">
         {% if page_obj.has_previous %}
-            <li class="page-item"><a class="page-link" href="?page=1{% if query %}&q={{ query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}">&laquo; First</a></li>
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}">Previous</a></li>
+            <li class="page-item"><a class="page-link shadow-sm border-0 rounded-2 mx-1" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}">{% if CURRENT_LANG == 'ar' %}السابق{% else %}Prev{% endif %}</a></li>
         {% endif %}
-
-        <li class="page-item disabled"><span class="page-link text-dark">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
-
+        <li class="page-item active"><span class="page-link shadow-sm border-0 rounded-2 mx-1">{% if CURRENT_LANG == 'ar' %}صفحة{% else %}Page{% endif %} {{ page_obj.number }}</span></li>
         {% if page_obj.has_next %}
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}">Next</a></li>
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}">Last &raquo;</a></li>
+            <li class="page-item"><a class="page-link shadow-sm border-0 rounded-2 mx-1" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}">{% if CURRENT_LANG == 'ar' %}التالي{% else %}Next{% endif %}</a></li>
         {% endif %}
     </ul>
 </nav>
