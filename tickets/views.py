@@ -6,7 +6,8 @@ from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Count
+from django.contrib.auth.models import User
 
 def register(request):
     if request.method == 'POST':
@@ -22,17 +23,26 @@ def register(request):
 
 @login_required
 def dashboard(request):
+    if request.user.is_staff:
+        base_qs = Ticket.objects.all()
+    else:
+        base_qs = Ticket.objects.filter(created_by=request.user)
+        
     context = {
-        'total_tickets': Ticket.objects.count(), 
-        'open_tickets': Ticket.objects.filter(status='Open').count(), 
-        'resolved_tickets': Ticket.objects.filter(status='Resolved').count(), 
-        'high_priority_tickets': Ticket.objects.filter(priority='High').count(), 
+        'total_tickets': base_qs.count(), 
+        'open_tickets': base_qs.filter(status='Open').count(), 
+        'resolved_tickets': base_qs.filter(status='Resolved').count(), 
+        'high_priority_tickets': base_qs.filter(priority='High').count(), 
     }
     return render(request, 'tickets/dashboard.html', context)
 
 @login_required
+@login_required
 def ticket_list(request):
-    tickets_list = Ticket.objects.all().order_by('-created_at')
+    if request.user.is_staff:
+        tickets_list = Ticket.objects.all().order_by('-created_at')
+    else:
+        tickets_list = Ticket.objects.filter(created_by=request.user).order_by('-created_at')
     
     # Search & Filters (Bonus B)
     query = request.GET.get('q')
@@ -84,44 +94,47 @@ def create_ticket(request):
 @login_required
 def ticket_detail(request, pk):
     ticket = get_object_or_404(Ticket, pk=pk)
+    
+    # Permission check: Creator or Staff only
+    if ticket.created_by != request.user and not request.user.is_staff:
+        messages.error(request, 'You do not have permission to view this ticket.')
+        return redirect('ticket_list')
+        
     replies_list = ticket.replies.all().order_by('created_at')
-
     # Pagination for replies (Bonus E)
     paginator = Paginator(replies_list, 5) # 5 replies per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    if request.method == "POST":
-        message = request.POST.get('message')
-        
-        if ticket.status == 'Closed':
-            messages.error(request, 'Cannot reply to a closed ticket.')
-            return redirect('ticket_detail', pk=pk)
-        
-        if not message or message.strip() == "":
-            messages.error(request, 'Reply cannot be empty.')
-            return redirect('ticket_detail', pk=pk)
-
-        Reply.objects.create(
-            ticket=ticket,
-            user=request.user,
-            message=message
-        )
-        messages.success(request, 'Reply added successfully.')
-        return redirect('ticket_detail', pk=pk)
-
     return render(request, 'tickets/ticket_detail.html', {'ticket': ticket, 'page_obj': page_obj})
+
 
 @login_required
 def edit_ticket(request, pk):
     ticket = get_object_or_404(Ticket, pk=pk)
     
-    # Permissions: Only creator or admin can edit (Bonus C)
-    if ticket.created_by != request.user and not request.user.is_staff:
-        messages.error(request, 'You do not have permission to edit this ticket.')
+    # Permissions: Only staff/admin can edit
+    if not request.user.is_staff:
+        messages.error(request, 'Only support staff can edit tickets.')
         return redirect('ticket_detail', pk=pk)
     
+    # Closed tickets cannot be edited by ANYONE (even staff)
+    if ticket.status == 'Closed':
+        messages.error(request, 'This ticket is closed and cannot be edited by anyone.')
+        return redirect('ticket_detail', pk=pk)
+
+    
     if request.method == "POST":
+        # If user is staff, they can ONLY update the status
+        if request.user.is_staff:
+            new_status = request.POST.get('status')
+            if new_status:
+                ticket.status = new_status
+                ticket.save()
+                messages.success(request, f'Ticket status updated to {new_status}.')
+            return redirect('ticket_detail', pk=ticket.pk)
+            
+        # For non-staff (though currently blocked by permissions above, keeping logic for safety)
         subject = request.POST.get('subject')
         if not subject or len(subject) < 5:
             messages.error(request, 'Subject must be at least 5 characters.')
@@ -143,11 +156,112 @@ def edit_ticket(request, pk):
 def delete_ticket(request, pk):
     ticket = get_object_or_404(Ticket, pk=pk)
     
-    # Permissions: Only creator or admin can delete (Bonus C)
-    if ticket.created_by != request.user and not request.user.is_staff:
-        messages.error(request, 'You do not have permission to delete this ticket.')
+    # Permissions: Only staff/admin can delete
+    if not request.user.is_staff:
+        messages.error(request, 'Only support staff can delete tickets.')
         return redirect('ticket_list')
+        
+    # Tickets can ONLY be deleted if they are Closed
+    if ticket.status != 'Closed':
+        messages.error(request, 'Tickets must be Closed before they can be deleted.')
+        return redirect('ticket_detail', pk=pk)
         
     ticket.delete()
     messages.success(request, 'Ticket deleted successfully.')
     return redirect('ticket_list')
+
+@login_required
+def user_list(request):
+    if not request.user.is_staff:
+        messages.error(request, 'Access denied.')
+        return redirect('dashboard')
+    
+    users = User.objects.annotate(
+        ticket_count=Count('tickets'),
+    ).order_by('-date_joined')
+    
+    return render(request, 'tickets/user_list.html', {'users': users})
+
+@login_required
+def user_create(request):
+    if not request.user.is_staff:
+        messages.error(request, 'Access denied.')
+        return redirect('dashboard')
+    
+    if request.method == "POST":
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        is_staff = request.POST.get('is_staff') == 'on'
+        
+        if not username or not password:
+            messages.error(request, 'Username and password are required.')
+        elif User.objects.filter(username=username).exists():
+            messages.error(request, 'Username already exists.')
+        else:
+            user = User.objects.create_user(username=username, email=email, password=password)
+            user.is_staff = is_staff
+            user.save()
+            messages.success(request, f'User {username} created successfully.')
+            return redirect('user_list')
+            
+    return render(request, 'tickets/user_form.html')
+
+@login_required
+def user_edit(request, pk):
+    if not request.user.is_staff:
+        messages.error(request, 'Access denied.')
+        return redirect('dashboard')
+        
+    target_user = get_object_or_404(User, pk=pk)
+    
+    if request.method == "POST":
+        username = request.POST.get('username')
+        if not username:
+            messages.error(request, 'Username is required.')
+            return render(request, 'tickets/user_form.html', {'target_user': target_user})
+
+        target_user.username = username
+        target_user.email = request.POST.get('email')
+        
+        if request.user.is_superuser:
+            target_user.is_staff = request.POST.get('is_staff') == 'on'
+        
+        new_password = request.POST.get('password')
+        if new_password:
+            target_user.set_password(new_password)
+            
+        target_user.save()
+        messages.success(request, f'User {target_user.username} updated.')
+        return redirect('user_list')
+        
+    return render(request, 'tickets/user_form.html', {'target_user': target_user})
+
+@login_required
+def user_delete(request, pk):
+    if not request.user.is_superuser:
+        messages.error(request, 'Only superusers can delete users.')
+        return redirect('user_list')
+        
+    target_user = get_object_or_404(User, pk=pk)
+    if target_user == request.user:
+        messages.error(request, 'You cannot delete yourself.')
+    else:
+        target_user.delete()
+        messages.success(request, 'User deleted successfully.')
+        
+    return redirect('user_list')
+
+@login_required
+def user_detail(request, pk):
+    if not request.user.is_staff and request.user.pk != pk:
+        messages.error(request, 'Access denied.')
+        return redirect('dashboard')
+        
+    viewed_user = get_object_or_404(User, pk=pk)
+    user_tickets = viewed_user.tickets.all().order_by('-created_at')
+    
+    return render(request, 'tickets/user_detail.html', {
+        'viewed_user': viewed_user,
+        'user_tickets': user_tickets
+    })

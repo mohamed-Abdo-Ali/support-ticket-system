@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}User Profile: {{ viewed_user.username }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body text-center">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; font-size: 2rem;">
+                    {{ viewed_user.username|make_list|first|upper }}
+                </div>
+                <h4 class="mb-0">{{ viewed_user.username }}</h4>
+                <p class="text-muted small">{{ viewed_user.email }}</p>
+                <hr>
+                <div class="row text-start">
+                    <div class="col-6 mb-2"><strong>Joined:</strong></div>
+                    <div class="col-6 mb-2">{{ viewed_user.date_joined|date:"M d, Y" }}</div>
+                    <div class="col-6 mb-2"><strong>Staff:</strong></div>
+                    <div class="col-6 mb-2">
+                        {% if viewed_user.is_staff %}<span class="text-success">Yes</span>{% else %}No{% endif %}
+                    </div>
+                    <div class="col-6 mb-2"><strong>Superuser:</strong></div>
+                    <div class="col-6 mb-2">
+                        {% if viewed_user.is_superuser %}<span class="text-success">Yes</span>{% else %}No{% endif %}
+                    </div>
+                </div>
+                {% if user.is_superuser and viewed_user != user %}
+                <div class="mt-3">
+                    <form action="{% url 'toggle_staff_status' viewed_user.pk %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm {% if viewed_user.is_staff %}btn-outline-danger{% else %}btn-outline-success{% endif %} w-100">
+                            {% if viewed_user.is_staff %}Remove Staff Status{% else %}Make Staff{% endif %}
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Tickets by {{ viewed_user.username }}</h5>
+                <span class="badge bg-primary">{{ user_tickets|length }} Total</span>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    {% for ticket in user_tickets %}
+                    <a href="{% url 'ticket_detail' ticket.pk %}" class="list-group-item list-group-item-action py-3">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <h6 class="mb-1">{{ ticket.subject }}</h6>
+                            <small class="text-muted">{{ ticket.created_at|timesince }} ago</small>
+                        </div>
+                        <p class="mb-1 text-truncate small text-muted">{{ ticket.description|truncatechars:100 }}</p>
+                        <div class="d-flex align-items-center gap-2 mt-2">
+                            <span class="badge {% if ticket.status == 'Open' %}bg-info{% elif ticket.status == 'Resolved' %}bg-success{% else %}bg-secondary{% endif %}">
+                                {{ ticket.status }}
+                            </span>
+                            <span class="badge bg-light text-dark border">{{ ticket.priority }}</span>
+                            <span class="badge bg-light text-dark border">{{ ticket.category }}</span>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <div class="text-center py-5 text-muted">
+                        <p class="mb-0">This user hasn't created any tickets yet.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

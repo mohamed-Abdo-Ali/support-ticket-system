@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if target_user %}Edit User: {{ target_user.username }}{% else %}Add New User{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0">{% if target_user %}Edit User{% else %}Create New User{% endif %}</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" name="username" id="username" class="form-control" value="{{ target_user.username|default:'' }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" name="email" id="email" class="form-control" value="{{ target_user.email|default:'' }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password {% if target_user %}(Leave blank to keep current){% endif %}</label>
+                        <input type="password" name="password" id="password" class="form-control" {% if not target_user %}required{% endif %}>
+                    </div>
+                    
+                    {% if user.is_superuser %}
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" name="is_staff" id="is_staff" class="form-check-input" {% if target_user.is_staff %}checked{% endif %}>
+                        <label for="is_staff" class="form-check-label">Is Staff / Support Member</label>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            {% if target_user %}Update User{% else %}Create User{% endif %}
+                        </button>
+                        <a href="{% url 'user_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

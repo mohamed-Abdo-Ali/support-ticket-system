@@ -32,4 +32,5 @@ urlpatterns = [
     
 
     path('', include('tickets.urls')), 
-]
+    path('replies/', include('replies.urls')),
+]

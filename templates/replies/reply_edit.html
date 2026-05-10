@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Reply{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0">Edit Reply</h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-3">Refers to ticket: <strong>{{ reply.ticket.subject }}</strong></p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Your Message</label>
+                        <textarea name="message" id="message" rows="5" class="form-control" required>{{ reply.message }}</textarea>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'ticket_detail' reply.ticket.pk %}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
