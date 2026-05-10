@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if ticket %}Edit Ticket{% else %}Create New Ticket{% endif %} - Support System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h2 class="card-title mb-4">{% if ticket %}Edit Ticket #{{ ticket.id }}{% else %}Create New Support Ticket{% endif %}</h2>
+                <hr>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Subject (Min 5 characters)</label>
+                        <input type="text" name="subject" class="form-control" 
+                               value="{{ ticket.subject|default:'' }}" required minlength="5">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description</label>
+                        <textarea name="description" class="form-control" rows="5" required>{{ ticket.description|default:'' }}</textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Priority</label>
+                            <select name="priority" class="form-select">
+                                <option value="Low" {% if ticket.priority == 'Low' %}selected{% endif %}>Low</option>
+                                <option value="Medium" {% if not ticket or ticket.priority == 'Medium' %}selected{% endif %}>Medium</option>
+                                <option value="High" {% if ticket.priority == 'High' %}selected{% endif %}>High</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Category</label>
+                            <select name="category" class="form-select">
+                                <option value="Technical" {% if ticket.category == 'Technical' %}selected{% endif %}>Technical</option>
+                                <option value="Billing" {% if ticket.category == 'Billing' %}selected{% endif %}>Billing</option>
+                                <option value="General" {% if not ticket or ticket.category == 'General' %}selected{% endif %}>General</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {% if ticket %}
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-primary">Ticket Status</label>
+                        <select name="status" class="form-select border-primary shadow-sm">
+                            <option value="Open" {% if ticket.status == 'Open' %}selected{% endif %}>Open</option>
+                            <option value="In Progress" {% if ticket.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                            <option value="Resolved" {% if ticket.status == 'Resolved' %}selected{% endif %}>Resolved</option>
+                            <option value="Closed" {% if ticket.status == 'Closed' %}selected{% endif %}>Closed</option>
+                        </select>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% if ticket %}{% url 'ticket_detail' ticket.pk %}{% else %}{% url 'ticket_list' %}{% endif %}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-5 shadow-sm">
+                            {% if ticket %}Update Ticket{% else %}Create Ticket{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

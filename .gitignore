@@ -1,0 +1,11 @@
+*.pyc
+*__pycache__*
+db.sqlite3
+.env
+venv/
+.vscode/
+.idea/
+*.log
+pdf_content.txt
+pdf_content.txt.txt
+manage.py_backup

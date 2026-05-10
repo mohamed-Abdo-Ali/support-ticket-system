@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ ticket.subject }} - Support System{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'ticket_list' %}">Tickets</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ ticket.subject }}</li>
+  </ol>
+</nav>
+
+<div class="card mb-4 shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">{{ ticket.subject }}</h3>
+        <div>
+            <span class="badge {% if ticket.status == 'Open' %}bg-primary{% elif ticket.status == 'In Progress' %}bg-secondary{% elif ticket.status == 'Resolved' %}bg-success{% else %}bg-dark{% endif %}">
+                {{ ticket.status }}
+            </span>
+            <span class="badge {% if ticket.priority == 'High' %}bg-danger{% elif ticket.priority == 'Medium' %}bg-warning text-dark{% else %}bg-info text-dark{% endif %} ms-1">
+                {{ ticket.priority }}
+            </span>
+        </div>
+    </div>
+    <div class="card-body">
+        <p class="lead">{{ ticket.description }}</p>
+        <div class="text-muted small">
+            Category: {{ ticket.category }} | 
+            Created by: {{ ticket.created_by.username }} | 
+            {{ ticket.created_at|date:"M d, Y H:i" }}
+        </div>
+        
+        <!-- Bonus C: Permissions (Creator or Admin) -->
+        {% if ticket.created_by == user or user.is_staff %}
+        <hr>
+        <div class="d-flex gap-2">
+            <a href="{% url 'edit_ticket' ticket.pk %}" class="btn btn-sm btn-warning">Edit Ticket</a>
+            <a href="{% url 'delete_ticket' ticket.pk %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this ticket?')">Delete Ticket</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<h4 class="mb-3">Replies</h4>
+<div class="list-group mb-3 shadow-sm">
+    {% for reply in page_obj %}
+    <div class="list-group-item">
+        <div class="d-flex w-100 justify-content-between">
+            <h6 class="mb-1 fw-bold text-primary">{{ reply.user.username }}</h6>
+            <small class="text-muted">{{ reply.created_at|timesince }} ago</small>
+        </div>
+        <p class="mb-1">{{ reply.message }}</p>
+    </div>
+    {% empty %}
+    <div class="list-group-item text-center py-3 text-muted">
+        No replies yet.
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination for Replies (Bonus E) -->
+{% if page_obj.has_other_pages %}
+<nav aria-label="Reply pagination" class="mb-4">
+    <ul class="pagination pagination-sm justify-content-end">
+        {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+        {% endif %}
+        <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+        {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% if ticket.status != 'Closed' %}
+<div class="card p-3 shadow-sm mb-5">
+    <h5>Add a Reply</h5>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <textarea name="message" class="form-control" rows="3" placeholder="Write your reply here..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-success px-4">Post Reply</button>
+    </form>
+</div>
+{% else %}
+<div class="alert alert-warning shadow-sm mb-5">
+    <i class="bi bi-info-circle me-2"></i> This ticket is closed and cannot receive more replies.
+</div>
+{% endif %}
+{% endblock %}
