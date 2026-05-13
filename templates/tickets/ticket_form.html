@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANG %}
 
 {% block title %}{% if ticket %}Edit Ticket{% else %}Create New Ticket{% endif %} - Support System{% endblock %}
 
@@ -7,47 +9,47 @@
     <div class="col-md-8">
         <div class="card shadow-sm">
             <div class="card-body p-4">
-                <h2 class="card-title mb-4">{% if ticket %}Edit Ticket #{{ ticket.id }}{% else %}Create New Support Ticket{% endif %}</h2>
+                <h2 class="card-title mb-4">{% if ticket %}{% if CURRENT_LANG == 'ar' %} تعديل تذكرة {% else %}Edit Ticket #{{ ticket.id }}{% endif %} #{{ ticket.id }}{% else %}{% if CURRENT_LANG == 'ar' %} إنشاء تذكرة دعم جديدة {% else %}Create New Support Ticket{% endif %}{% endif %}</h2>
                 <hr>
-                
+
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    
+
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Subject (Min 5 characters)</label>
-                        <input type="text" name="subject" class="form-control" 
-                               value="{{ ticket.subject|default:'' }}" required minlength="5"
-                               {% if user.is_staff %}readonly{% endif %}>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Description</label>
-                        <textarea name="description" class="form-control" rows="5" required
-                                  {% if user.is_staff %}readonly{% endif %}>{{ ticket.description|default:'' }}</textarea>
+                        <!-- <label class="form-label fw-bold"> Subject (Min 5 characters)</label> -->
+                        <label class="form-label fw-bold"> {% if CURRENT_LANG == 'ar' %} الموضوع {% else %} subject {% endif %}</label>
+                        <input type="text" name="subject" class="form-control" value="{{ ticket.subject|default:'' }}"  required minlength="5" {% if user.is_staff %}readonly{% endif %}>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Attachment (Optional Image)</label>
+                        <label class="form-label fw-bold">{% if CURRENT_LANG == 'ar' %} الوصف {% else %} Description {% endif %}</label>
+                        <textarea name="description" class="form-control" rows="5" required {% if user.is_staff %}readonly{% endif %}>{{ ticket.description|default:'' }}</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">{% if CURRENT_LANG == 'ar' %} المرفق (اختياري) {% else %} Attachment (Optional Image) {% endif %}</label>
                         <input type="file" name="attachment" class="form-control" accept="image/*" {% if user.is_staff %}disabled{% endif %}>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Priority</label>
+                            <label class="form-label fw-bold">{% if CURRENT_LANG == 'ar' %} الأولوية {% else %} Priority {% endif %}</label>
                             <select name="priority" class="form-select" {% if user.is_staff %}disabled{% endif %}>
-                                <option value="Low" {% if ticket.priority == 'Low' %}selected{% endif %}>Low</option>
-                                <option value="Medium" {% if not ticket or ticket.priority == 'Medium' %}selected{% endif %}>Medium</option>
-                                <option value="High" {% if ticket.priority == 'High' %}selected{% endif %}>High</option>
+                                <option value= "Low" {% if ticket.priority == 'Low' %}selected{% endif %}>{% if CURRENT_LANG == 'ar' %} منخفض {% else %} Low {% endif %}</option>
+                                <option value= "Medium" {% if not ticket or ticket.priority == 'Medium' %}selected{% endif %}>{% if CURRENT_LANG == 'ar' %} متوسط {% else %} Medium {% endif %}</option>
+                                <option value="High" {% if ticket.priority == 'High' %}selected{% endif %}>{% if CURRENT_LANG == 'ar' %} عالي {% else %} High {% endif %}</option>
                             </select>
                             {% if user.is_staff %}<input type="hidden" name="priority" value="{{ ticket.priority }}">{% endif %}
                         </div>
-                        
+
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Category</label>
+                            <label class="form-label fw-bold">{% if CURRENT_LANG == 'ar' %} التصنيف {% else %} Category {% endif %}</label>
                             <select name="category" class="form-select" {% if user.is_staff %}disabled{% endif %}>
-                                <option value="Technical" {% if ticket.category == 'Technical' %}selected{% endif %}>Technical</option>
-                                <option value="Billing" {% if ticket.category == 'Billing' %}selected{% endif %}>Billing</option>
-                                <option value="General" {% if not ticket or ticket.category == 'General' %}selected{% endif %}>General</option>
+                                <option value="Technical" {% if ticket.category == 'Technical' %}selected{% endif %}>
+                                    {% if CURRENT_LANG == 'ar' %} التقني {% else %} Technical {% endif %}</option>
+                                <option value= "Billing" {% if ticket.category == 'Billing' %}selected{% endif %}>
+                                    {% if CURRENT_LANG == 'ar' %} الفواتير {% else %} Billing {% endif %}</option>
+                                <option value="General" {% if not ticket or ticket.category == 'General' %}selected{% endif %}>{% if CURRENT_LANG == 'ar' %} عام {% else %} General {% endif %}</option>
                             </select>
                             {% if user.is_staff %}<input type="hidden" name="category" value="{{ ticket.category }}">{% endif %}
                         </div>
@@ -56,21 +58,26 @@
 
                     {% if ticket %}
                     <div class="mb-4">
-                        <label class="form-label fw-bold text-primary">Ticket Status</label>
+                        <label class="form-label fw-bold text-primary">{% if CURRENT_LANG == 'ar' %} حالة التذكرة {% else %} Ticket Status {% endif %}</label>
                         <select name="status" class="form-select border-primary shadow-sm">
-                            <option value="Open" {% if ticket.status == 'Open' %}selected{% endif %}>Open</option>
-                            <option value="In Progress" {% if ticket.status == 'In Progress' %}selected{% endif %}>In Progress</option>
-                            <option value="Resolved" {% if ticket.status == 'Resolved' %}selected{% endif %}>Resolved</option>
-                            <option value="Closed" {% if ticket.status == 'Closed' %}selected{% endif %}>Closed</option>
+                            <option value="Open" {% if ticket.status == 'Open' %}selected{% endif %}>{% if CURRENT_LANG == 'ar' %} مفتوحة {% else %} Open {% endif %}</option>
+                            <option value="In Progress" {% if ticket.status == 'In Progress' %}selected{% endif %}>{% if CURRENT_LANG == 'ar' %} قيد التنفيذ {% else %} In Progress {% endif %}</option>
+                            <option value="Resolved" {% if ticket.status == 'Resolved' %}selected{% endif %}>{% if CURRENT_LANG == 'ar' %} تم حلها {% else %} Resolved {% endif %}</option>
+                            <option value="Closed" {% if ticket.status == 'Closed' %}selected{% endif %}>{% if CURRENT_LANG == 'ar' %} مغلقة {% else %} Closed {% endif %}</option>
                         </select>
                     </div>
                     {% endif %}
 
                     <div class="d-flex justify-content-between mt-4">
-                        <a href="{% if ticket %}{% url 'ticket_detail' ticket.pk %}{% else %}{% url 'ticket_list' %}{% endif %}" class="btn btn-outline-secondary px-4">Cancel</a>
-                        <button type="submit" class="btn btn-primary px-5 shadow-sm">
-                            {% if ticket %}Update Ticket{% else %}Create Ticket{% endif %}
-                        </button>
+                        <a href="{% if ticket %}{% url 'ticket_detail' ticket.pk %}{% else %}{% url 'ticket_list' %}{% endif %}"
+                            class="btn btn-outline-secondary px-4"> {% if CURRENT_LANG == 'ar' %} إلغاء {% else %}Cancel{% endif %}</a>
+                                <button type="submit" class="btn btn-primary px-5 shadow-sm">
+                                    {% if ticket %}
+                                        {% if CURRENT_LANG == 'ar' %} تعديل التذكرة {% else %}Update Ticket{% endif %}
+                                    {% else %}
+                                        {% if CURRENT_LANG == 'ar' %} إنشاء تذكرة دعم جديدة {% else %}Create Ticket{% endif %}
+                                    {% endif %} 
+                                </button>
                     </div>
                 </form>
             </div>
