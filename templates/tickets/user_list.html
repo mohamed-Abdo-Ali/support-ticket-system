@@ -1,12 +1,14 @@
 {% extends 'base.html' %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANG %}
 
-{% block title %}User Management - Support System{% endblock %}
+{% block title %}{% if CURRENT_LANG == 'ar' %}إدارة المستخدمين{% else %}User Management{% endif %}{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>User Management</h2>
+    <h2>{% if CURRENT_LANG == 'ar' %}إدارة المستخدمين{% else %}User Management{% endif %}</h2>
     <a href="{% url 'user_create' %}" class="btn btn-primary">
-        <i class="bi bi-person-plus"></i> Add New User
+        <i class="bi bi-person-plus"></i> {% if CURRENT_LANG == 'ar' %}إنشاء مستخدم جديد{% else %}Add New User{% endif %}
     </a>
 </div>
 
@@ -16,13 +18,13 @@
             <table class="table table-hover align-middle">
                 <thead class="table-light">
                     <tr>
-                        <th>Full Name</th>
-                        <th>Username</th>
-                        <th>Email</th>
-                        <th>Date Joined</th>
-                        <th>Tickets</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th>{% if CURRENT_LANG == 'ar' %}الاسم الكامل:{% else %}Full Name:{% endif %}</th>
+                        <th>{% if CURRENT_LANG == 'ar' %}اسم المستخدم:{% else %}Username:{% endif %}</th>
+                        <th>{% if CURRENT_LANG == 'ar' %}عنوان البريد الإلكتروني:{% else %}Email Address:{% endif %}</th>
+                        <th>{% if CURRENT_LANG == 'ar' %}تاريخ الانضمام:{% else %}Date Joined:{% endif %}</th>
+                        <th>{% if CURRENT_LANG == 'ar' %}عدد التذاكر:{% else %}Tickets:{% endif %}</th>
+                        <th>{% if CURRENT_LANG == 'ar' %}الحالة:{% else %}Status:{% endif %}</th>
+                        <th>{% if CURRENT_LANG == 'ar' %} الإجراءات {% else %}Actions{% endif %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,9 +34,9 @@
                         <td>
                             <strong>{{ u.username }}</strong>
                             {% if u.is_superuser %}
-                            <span class="badge bg-danger ms-1">Superuser</span>
+                            <span class="badge bg-danger ms-1">{% if CURRENT_LANG == 'ar' %}مدير (وصول كامل للنظام){% else %}Superuser{% endif %}</span>
                             {% elif u.is_staff %}
-                            <span class="badge bg-primary ms-1">Staff</span>
+                            <span class="badge bg-primary ms-1">{% if CURRENT_LANG == 'ar' %}موظف دعم (يمكنه الرد):{% else %}Staff{% endif %}</span>
                             {% endif %}
                         </td>
                         <td>{{ u.email|default:"-" }}</td>
@@ -42,19 +44,19 @@
                         <td><span class="badge bg-secondary">{{ u.ticket_count }}</span></td>
                         <td>
                             {% if u.is_active %}
-                            <span class="text-success">● Active</span>
+                            <span class="text-success">● {% if CURRENT_LANG == 'ar' %}مفعل{% else %}Active{% endif %}</span>
                             {% else %}
-                            <span class="text-danger">● Inactive</span>
+                            <span class="text-danger">● {% if CURRENT_LANG == 'ar' %}غير مفعل{% else %}Inactive{% endif %}</span>
                             {% endif %}
                         </td>
                         <td>
                             <div class="btn-group btn-group-sm">
-                                <a href="{% url 'user_detail' u.pk %}" class="btn btn-outline-info">View</a>
-                                <a href="{% url 'user_edit' u.pk %}" class="btn btn-outline-primary">Edit</a>
+                                <a href="{% url 'user_detail' u.pk %}" class="btn btn-outline-info">{% if CURRENT_LANG == 'ar' %}عرض{% else %}View{% endif %}</a>
+                                <a href="{% url 'user_edit' u.pk %}" class="btn btn-outline-primary">{% if CURRENT_LANG == 'ar' %}تعديل{% else %}Edit{% endif %}</a>
                                 {% if user.is_superuser and u != user %}
                                 <form action="{% url 'user_delete' u.pk %}" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this user?');">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-outline-danger">Delete</button>
+                                    <button type="submit" class="btn btn-outline-danger">{% if CURRENT_LANG == 'ar' %}حذف{% else %}Delete{% endif %}</button>
                                 </form>
                                 {% endif %}
                             </div>
@@ -63,7 +65,7 @@
 
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center py-4 text-muted">No users found.</td>
+                        <td colspan="6" class="text-center py-4 text-muted">{% if CURRENT_LANG == 'ar' %}لا يوجد مستخدمين{% else %}No users found.{% endif %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

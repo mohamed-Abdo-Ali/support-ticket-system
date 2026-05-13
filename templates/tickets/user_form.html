@@ -1,56 +1,58 @@
 {% extends 'base.html' %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANG %}
 
-{% block title %}{% if target_user %}Edit User: {{ target_user.username }}{% else %}Add New User{% endif %}{% endblock %}
+{% block title %}{% if target_user %}{% if CURRENT_LANG == 'ar' %}تعديل المستخدم: {{ target_user.username }}{% else %}Edit User: {{ target_user.username }}{% endif %}{% else %}{% if CURRENT_LANG == 'ar' %}إضافة مستخدم جديد{% else %}Add New User{% endif %}{% endif %}{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card shadow-sm">
             <div class="card-header bg-dark text-white">
-                <h4 class="mb-0">{% if target_user %}Edit User{% else %}Create New User{% endif %}</h4>
+                <h4 class="mb-0">{% if target_user %}{% if CURRENT_LANG == 'ar' %}تعديل المستخدم{% else %}Edit User{% endif %}{% else %}{% if CURRENT_LANG == 'ar' %}إنشاء مستخدم جديد{% else %}Create New User{% endif %}{% endif %}</h4>
             </div>
             <div class="card-body p-4">
                 <form method="post">
                     {% csrf_token %}
                     
                     <div class="mb-3">
-                        <label for="fullname" class="form-label">Full Name</label>
+                        <label for="fullname" class="form-label">{% if CURRENT_LANG == 'ar' %}الاسم الكامل:{% else %}Full Name:{% endif %}</label>
                         <input type="text" name="fullname" id="fullname" class="form-control" value="{{ target_user.first_name|default:'' }}" placeholder="e.g. Ahmed Ali Saleh">
                     </div>
 
                     <div class="mb-3">
 
-                        <label for="username" class="form-label">Username</label>
+                        <label for="username" class="form-label">{% if CURRENT_LANG == 'ar' %}اسم المستخدم:{% else %}Username:{% endif %}</label>
                         <input type="text" name="username" id="username" class="form-control" value="{{ target_user.username|default:'' }}" required>
                     </div>
                     
                     <div class="mb-3">
-                        <label for="email" class="form-label">Email Address</label>
+                        <label for="email" class="form-label">{% if CURRENT_LANG == 'ar' %}عنوان البريد الإلكتروني:{% else %}Email Address:{% endif %}</label>
                         <input type="email" name="email" id="email" class="form-control" value="{{ target_user.email|default:'' }}">
                     </div>
                     
                     <div class="mb-3">
-                        <label for="password" class="form-label">Password {% if target_user %}(Leave blank to keep current){% endif %}</label>
+                        <label for="password" class="form-label">{% if CURRENT_LANG == 'ar' %}كلمة المرور {% if target_user %}(اتركه فارغًا للاحتفاظ بالحالي):{% else %}Password {% if target_user %}(Leave blank to keep current):{% endif %}{% endif %}{%endif%}</label>
                         <input type="password" name="password" id="password" class="form-control" {% if not target_user %}required{% endif %}>
                     </div>
                     
                     {% if user.is_superuser %}
                     <div class="mb-2 form-check">
                         <input type="checkbox" name="is_staff" id="is_staff" class="form-check-input" {% if target_user.is_staff %}checked{% endif %}>
-                        <label for="is_staff" class="form-check-label">Is Support Staff (Can Reply)</label>
+                        <label for="is_staff" class="form-check-label">{% if CURRENT_LANG == 'ar' %}موظف دعم (يمكنه الرد):{% else %}Is Support Staff (Can Reply):{% endif %}</label>
                     </div>
                     <div class="mb-3 form-check">
                         <input type="checkbox" name="is_superuser" id="is_superuser" class="form-check-input" {% if target_user.is_superuser %}checked{% endif %}>
-                        <label for="is_superuser" class="form-check-label text-danger fw-bold">Is Manager (Full System Access)</label>
+                        <label for="is_superuser" class="form-check-label text-danger fw-bold">{% if CURRENT_LANG == 'ar' %}مدير (وصول كامل للنظام):{% else %}Is Manager (Full System Access):{% endif %}</label>
                     </div>
                     {% endif %}
 
                     
                     <div class="d-grid gap-2 mt-4">
                         <button type="submit" class="btn btn-primary">
-                            {% if target_user %}Update User{% else %}Create User{% endif %}
+                            {% if target_user %}{% if CURRENT_LANG == 'ar' %}تحديث المستخدم{% else %}Update User{% endif %}{% else %}{% if CURRENT_LANG == 'ar' %}إنشاء مستخدم{% else %}Create User{% endif %}{% endif %}
                         </button>
-                        <a href="{% url 'user_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                        <a href="{% url 'user_list' %}" class="btn btn-outline-secondary">{% if CURRENT_LANG == 'ar' %}إلغاء{% else %}Cancel{% endif %}</a>
                     </div>
                 </form>
             </div>

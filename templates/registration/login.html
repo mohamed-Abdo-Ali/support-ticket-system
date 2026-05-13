@@ -1,13 +1,15 @@
 {% extends 'base.html' %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANG %}
 
-{% block title %}Login - Support System{% endblock %}
+{% block title %}{% if CURRENT_LANG == 'ar' %}تسجيل الدخول{% else %}Login{% endif %} - Support System{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center mt-5">
     <div class="col-md-4">
         <div class="card shadow">
             <div class="card-body p-4">
-                <h2 class="text-center mb-4">Login</h2>
+                <h2 class="text-center mb-4">{% if CURRENT_LANG == 'ar' %}تسجيل الدخول{% else %}Login{% endif %}</h2>
                 <form method="post">
                     {% csrf_token %}
                     
@@ -28,11 +30,11 @@
                         </div>
                     {% endfor %}
                     <div class="d-grid gap-2 mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg shadow-sm">Login</button>
+                        <button type="submit" class="btn btn-primary btn-lg shadow-sm">{% if CURRENT_LANG == 'ar' %}تسجيل الدخول{% else %}Login{% endif %}</button>
                     </div>
                 </form>
                 <div class="text-center mt-3">
-                    <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+                    <p>{% if CURRENT_LANG == 'ar' %}ليس لديك حساب؟{% else %}Don't have an account?{% endif %} <a href="{% url 'register' %}">{% if CURRENT_LANG == 'ar' %}سجل هنا{% else %}Register here{% endif %}</a></p>
                 </div>
             </div>
         </div>

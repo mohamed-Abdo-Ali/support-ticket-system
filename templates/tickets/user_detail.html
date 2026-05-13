@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANG %}
 
-{% block title %}User Profile: {{ viewed_user.username }}{% endblock %}
+{% block title %}{% if CURRENT_LANG == 'ar' %}ملف المستخدم: {{ viewed_user.username }}{% else %}User Profile: {{ viewed_user.username }}{% endif %}{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -14,23 +16,23 @@
                 <p class="text-muted small">{{ viewed_user.email }}</p>
                 <hr>
                 <div class="row text-start">
-                    <div class="col-6 mb-2"><strong>Joined:</strong></div>
+                    <div class="col-6 mb-2"><strong>{% if CURRENT_LANG == 'ar' %}تاريخ الانضمام:{% else %}Joined:{% endif %}</strong></div>
                     <div class="col-6 mb-2">{{ viewed_user.date_joined|date:"M d, Y" }}</div>
-                    <div class="col-6 mb-2"><strong>Staff:</strong></div>
+                    <div class="col-6 mb-2"><strong>{% if CURRENT_LANG == 'ar' %}موظف:{% else %}Staff:{% endif %}</strong></div>
                     <div class="col-6 mb-2">
-                        {% if viewed_user.is_staff %}<span class="text-success">Yes</span>{% else %}No{% endif %}
+                        {% if viewed_user.is_staff %}<span class="text-success">{% if CURRENT_LANG == 'ar' %}نعم{% else %}Yes{% endif %}</span>{% else %}{% if CURRENT_LANG == 'ar' %}لا{% else %}No{% endif %}{% endif %}
                     </div>
-                    <div class="col-6 mb-2"><strong>Superuser:</strong></div>
+                    <div class="col-6 mb-2"><strong>{% if CURRENT_LANG == 'ar' %}مسؤول:{% else %}Superuser:{% endif %}</strong></div>
                     <div class="col-6 mb-2">
-                        {% if viewed_user.is_superuser %}<span class="text-success">Yes</span>{% else %}No{% endif %}
+                        {% if viewed_user.is_superuser %}<span class="text-success">{% if CURRENT_LANG == 'ar' %}نعم{% else %}Yes{% endif %}</span>{% else %}{% if CURRENT_LANG == 'ar' %}لا{% else %}No{% endif %}{% endif %}
                     </div>
                 </div>
                 {% if user.is_superuser and viewed_user != user %}
                 <div class="mt-3">
-                    <form action="{% url 'toggle_staff_status' viewed_user.pk %}" method="post">
+                    <form action="{% url 'user_detail' viewed_user.pk %}" method="post">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-sm {% if viewed_user.is_staff %}btn-outline-danger{% else %}btn-outline-success{% endif %} w-100">
-                            {% if viewed_user.is_staff %}Remove Staff Status{% else %}Make Staff{% endif %}
+                            {% if viewed_user.is_staff %}{% if CURRENT_LANG == 'ar' %}إزالة صفة الموظف{% else %}Remove Staff Status{% endif %}{% else %}{% if CURRENT_LANG == 'ar' %}جعله موظف{% else %}Make Staff{% endif %}{% endif %}
                         </button>
                     </form>
                 </div>
@@ -42,8 +44,8 @@
     <div class="col-md-8">
         <div class="card shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Tickets by {{ viewed_user.username }}</h5>
-                <span class="badge bg-primary">{{ user_tickets|length }} Total</span>
+                <h5 class="mb-0">{% if CURRENT_LANG == 'ar' %}التذاكر بواسطة {{ viewed_user.username }}{% else %}Tickets by {{ viewed_user.username }}{% endif %}</h5>
+                <span class="badge bg-primary">{{ user_tickets|length }} {% if CURRENT_LANG == 'ar' %}اجمالي التذاكر:{% else %}Total Tickets:{% endif %}</span>
             </div>
             <div class="card-body">
                 <div class="list-group list-group-flush">
@@ -51,20 +53,26 @@
                     <a href="{% url 'ticket_detail' ticket.pk %}" class="list-group-item list-group-item-action py-3">
                         <div class="d-flex w-100 justify-content-between align-items-center">
                             <h6 class="mb-1">{{ ticket.subject }}</h6>
-                            <small class="text-muted">{{ ticket.created_at|timesince }} ago</small>
+                            <small class="text-muted">{% if CURRENT_LANG == 'ar' %}{% if CURRENT_LANG == 'ar' %}تاريخ الانضمام:{% else %}Joined:{% endif %}{{ ticket.created_at|timesince  }}{% else %}{{ ticket.created_at|timesince }}{% endif %} {% if CURRENT_LANG == 'ar' %}منذ{% else %}ago{% endif %}</small>
                         </div>
                         <p class="mb-1 text-truncate small text-muted">{{ ticket.description|truncatechars:100 }}</p>
                         <div class="d-flex align-items-center gap-2 mt-2">
                             <span class="badge {% if ticket.status == 'Open' %}bg-info{% elif ticket.status == 'Resolved' %}bg-success{% else %}bg-secondary{% endif %}">
-                                {{ ticket.status }}
+                                {%  if ticket.status == 'Open' %}{% if CURRENT_LANG == 'ar' %}مفتوح{% else %}Open{% endif %}{% elif ticket.status == 'Resolved' %}{% if CURRENT_LANG == 'ar' %}تم الحل{% else %}Resolved{% endif %}{% else %}{% if CURRENT_LANG == 'ar' %}مغلق{% else %}Closed{% endif %}{% endif %}
                             </span>
-                            <span class="badge bg-light text-dark border">{{ ticket.priority }}</span>
-                            <span class="badge bg-light text-dark border">{{ ticket.category }}</span>
+
+                            <span class="badge bg-light text-dark border">
+                                {%  if ticket.priority == 'Low' %}{% if CURRENT_LANG == 'ar' %}منخفض{% else %}Low{% endif %}{% elif ticket.priority == 'Medium' %}{% if CURRENT_LANG == 'ar' %}متوسط{% else %}Medium{% endif %}{% else %}{% if CURRENT_LANG == 'ar' %}مرتفع{% else %}High{% endif %}{% endif %}
+                            </span>
+
+                            <span class="badge bg-light text-dark border">
+                                {%  if ticket.category == 'Technical' %}{% if CURRENT_LANG == 'ar' %}تقني{% else %}Technical{% endif %}{% elif ticket.category == 'Billing' %}{% if CURRENT_LANG == 'ar' %}فاتورة{% else %}Billing{% endif %}{% else %}{% if CURRENT_LANG == 'ar' %}استفسار عام{% else %}General Inquiry{% endif %}{% endif %}
+                            </span>
                         </div>
                     </a>
                     {% empty %}
                     <div class="text-center py-5 text-muted">
-                        <p class="mb-0">This user hasn't created any tickets yet.</p>
+                        <p class="mb-0">{% if CURRENT_LANG == 'ar' %}لم ينشئ هذا المستخدم أي تذاكر حتى الآن.{% else %}This user hasn't created any tickets yet.{% endif %}</p>
                     </div>
                     {% endfor %}
                 </div>

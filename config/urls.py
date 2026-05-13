@@ -27,7 +27,7 @@ urlpatterns = [
     path('', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('register/', ticket_views.register, name='register'),
-    path('login/', auth_views.LoginView.as_view(template_name='registration/login.html')), # Keep /login/ as well if needed
+    path('login/', auth_views.LoginView.as_view(template_name='registration/login.html')), 
     
 
     path('', include('tickets.urls')), 
@@ -37,4 +37,4 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
+

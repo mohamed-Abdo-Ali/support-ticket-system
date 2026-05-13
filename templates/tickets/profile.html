@@ -1,37 +1,39 @@
 {% extends 'base.html' %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANG %}
 
-{% block title %}My Profile - Support System{% endblock %}
+{% block title %}{% if CURRENT_LANG == 'ar' %}الملف الشخصي{% else %}My Profile{% endif %} - Support System{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card shadow-sm">
             <div class="card-header bg-dark text-white">
-                <h4 class="mb-0">My Profile</h4>
+                <h4 class="mb-0">{% if CURRENT_LANG == 'ar' %}الملف الشخصي{% else %}My Profile{% endif %}</h4>
             </div>
             <div class="card-body p-4">
                 <form method="post">
                     {% csrf_token %}
                     
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Username</label>
+                        <label class="form-label fw-bold">{% trans "Username" %}</label>
                         <input type="text" class="form-control bg-light" value="{{ user.username }}" readonly>
-                        <div class="form-text">Username cannot be changed.</div>
+                        <div class="form-text">{% if CURRENT_LANG == 'ar' %}لا يمكن تغيير اسم المستخدم.{% else %}Username cannot be changed.{% endif %}</div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="fullname" class="form-label fw-bold">Full Name</label>
+                        <label for="fullname" class="form-label fw-bold">{% if CURRENT_LANG == 'ar' %}الاسم الكامل{% else %}Full Name{% endif %}</label>
                         <input type="text" name="fullname" id="fullname" class="form-control" value="{{ user.first_name }}" required>
                     </div>
                     
                     <div class="mb-3">
-                        <label for="email" class="form-label fw-bold">Email Address</label>
+                        <label for="email" class="form-label fw-bold">{% if CURRENT_LANG == 'ar' %}البريد الإلكتروني{% else %}Email Address{% endif %}</label>
                         <input type="email" name="email" id="email" class="form-control" value="{{ user.email }}">
                     </div>
                     
                     <div class="d-grid gap-2 mt-4">
-                        <button type="submit" class="btn btn-primary">Update Profile</button>
-                        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Back to Dashboard</a>
+                        <button type="submit" class="btn btn-primary">{% if CURRENT_LANG == 'ar' %}تحديث الملف الشخصي{% else %}Update Profile{% endif %}</button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">{% if CURRENT_LANG == 'ar' %}العودة إلى لوحة التحكم{% else %}Back to Dashboard{% endif %}</a>
                     </div>
                 </form>
             </div>

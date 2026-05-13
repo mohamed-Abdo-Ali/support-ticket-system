@@ -1,18 +1,20 @@
 {% extends 'base.html' %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANG %}
 
-{% block title %}Register - Support System{% endblock %}
+{% block title %}{% if CURRENT_LANG == 'ar' %}تسجيل حساب جديد{% else %}Register{% endif %} - Support System{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center mt-5">
     <div class="col-md-5">
         <div class="card shadow">
             <div class="card-body p-4">
-                <h2 class="text-center mb-4">Create Account</h2>
+                <h2 class="text-center mb-4">{% if CURRENT_LANG == 'ar' %}إنشاء حساب جديد{% else %}Create Account{% endif %}</h2>
                 <form method="post">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label class="form-label">Full Name</label>
-                        <input type="text" name="fullname" class="form-control" placeholder="e.g. Ahmed Ali Saleh" required>
+                        <label class="form-label">{% if CURRENT_LANG == 'ar' %}الاسم الكامل{% else %}Full Name{% endif %}</label>
+                        <input type="text" name="fullname" class="form-control" placeholder="{% if CURRENT_LANG == 'ar' %}مثل: أحمد علي صالح{% else %}e.g. Ahmed Ali Saleh{% endif %}" required>
                     </div>
 
                     {% for field in form %}
@@ -28,11 +30,11 @@
                         </div>
                     {% endfor %}
                     <div class="d-grid gap-2 mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg shadow-sm">Register</button>
+                        <button type="submit" class="btn btn-primary btn-lg shadow-sm">{% if CURRENT_LANG == 'ar' %}إنشاء حساب{% else %}Register{% endif %}</button>
                     </div>
                 </form>
                 <div class="text-center mt-3">
-                    <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+                    <p>{% if CURRENT_LANG == 'ar' %}هل لديك حساب بالفعل؟{% else %}Already have an account?{% endif %} <a href="{% url 'login' %}">{% if CURRENT_LANG == 'ar' %}سجل الدخول هنا{% else %}Login here{% endif %}</a></p>
                 </div>
             </div>
         </div>
