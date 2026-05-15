@@ -142,18 +142,15 @@ LOCALE_PATHS = [
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
-# Media Files (Uploads)
+STATIC_ROOT = 'staticfiles'
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# هذا السطر يخبر Django أن صفحة تسجيل الدخول هي /login/ وليست /accounts/login/
 LOGIN_URL = 'login'
 
-# التوجيه بعد تسجيل الدخول الناجح
 LOGIN_REDIRECT_URL = 'dashboard'
 
-# التوجيه بعد تسجيل الخروج
 LOGOUT_REDIRECT_URL = 'login'
 
-# Email Configuration (Console Backend for testing)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
