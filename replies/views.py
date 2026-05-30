@@ -3,6 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from tickets.models import Ticket
 from .models import Reply
+from .serializers import ReplySerializer
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 
 @login_required
@@ -60,3 +63,10 @@ def delete_reply(request, pk):
     return redirect('ticket_detail', pk=reply.ticket.pk)
 
 
+
+
+@api_view(['GET'])
+def replys_api (request) :
+    replays = Reply.objects.all()
+    replay_serializer = ReplySerializer(replays,many=True)
+    return Response ({"replay":replay_serializer.data})
