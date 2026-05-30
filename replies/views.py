@@ -4,6 +4,7 @@ from django.contrib import messages
 from tickets.models import Ticket
 from .models import Reply
 
+
 @login_required
 def add_reply(request, ticket_pk):
     ticket = get_object_or_404(Ticket, pk=ticket_pk)
@@ -57,3 +58,5 @@ def delete_reply(request, pk):
     messages.error(request, 'Replies cannot be deleted once posted to maintain audit trail.')
     reply = get_object_or_404(Reply, pk=pk)
     return redirect('ticket_detail', pk=reply.ticket.pk)
+
+

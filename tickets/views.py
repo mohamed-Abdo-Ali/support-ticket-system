@@ -10,6 +10,11 @@ from django.contrib.auth import login
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
 from django.contrib.auth.models import User
+from .serializers import TicketsSerializer
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+
+
 
 def register(request):
     if request.method == 'POST':
@@ -317,4 +322,9 @@ def profile(request):
     return render(request, 'tickets/profile.html')
 
 
+@api_view(['GET'])
+def ticket_api (request) :
+    tickets = Ticket.objects.all()
+    tickets_serializer = TicketsSerializer(tickets , many = True)
+    return Response ({'tiket':tickets_serializer.data})
 

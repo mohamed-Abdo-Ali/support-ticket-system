@@ -16,6 +16,9 @@ urlpatterns = [
     path('users/<int:pk>/edit/', views.user_edit, name='user_edit'),
     path('users/<int:pk>/delete/', views.user_delete, name='user_delete'),
     path('profile/', views.profile, name='profile'),
+    path('api/', views.ticket_api, name='ticket_api'),
+
+
 ]
 
 
