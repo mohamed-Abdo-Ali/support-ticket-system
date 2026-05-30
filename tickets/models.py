@@ -30,7 +30,7 @@ class Ticket(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Open') 
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tickets') 
     created_at = models.DateTimeField(auto_now_add=True)
-    attachment = models.ImageField(upload_to='ticket_attachments/', null=True, blank=True)
+    attachment = models.ImageField(upload_to='ticket_attachments/%Y/%m/%d', null=True, blank=True)
 
     @property
     def is_late(self):
