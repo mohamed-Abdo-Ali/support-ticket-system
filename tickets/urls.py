@@ -1,25 +1,15 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from . import views
 
+router = DefaultRouter()
+router.register(r'tickets', views.TicketViewSet, basename='ticket')
+router.register(r'users', views.UserViewSet, basename='user')
+
 urlpatterns = [
-    path('dashboard/', views.dashboard, name='dashboard'),
-    path('tickets/', views.ticket_list, name='ticket_list'),
-    path('tickets/new/', views.create_ticket, name='create_ticket'),
-    path('tickets/<int:pk>/', views.ticket_detail, name='ticket_detail'), 
-    path('tickets/<int:pk>/edit/', views.edit_ticket, name='edit_ticket'), 
-    path('tickets/<int:pk>/delete/', views.delete_ticket, name='delete_ticket'),
-    
-    # User Management
-    path('users/', views.user_list, name='user_list'),
-    path('users/new/', views.user_create, name='user_create'),
-    path('users/<int:pk>/', views.user_detail, name='user_detail'),
-    path('users/<int:pk>/edit/', views.user_edit, name='user_edit'),
-    path('users/<int:pk>/delete/', views.user_delete, name='user_delete'),
-    path('profile/', views.profile, name='profile'),
-    path('api/', views.ticket_api, name='ticket_api'),
-
-
+    path('api/', include(router.urls)),
+    path('api/dashboard/', views.DashboardView.as_view(), name='api_dashboard'),
+    path('api/profile/', views.ProfileView.as_view(), name='api_profile'),
+    path('api/register/', views.RegisterView.as_view(), name='api_register'),
+    path('api/translations/<str:lang>/', views.TranslationView.as_view(), name='api_translations'),
 ]
-
-
-
