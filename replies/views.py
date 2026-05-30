@@ -66,7 +66,7 @@ def delete_reply(request, pk):
 
 
 @api_view(['GET'])
-def replys_api (request) :
-    replays = Reply.objects.all()
-    replay_serializer = ReplySerializer(replays,many=True)
+def replies_api (request) :
+    replies = Reply.objects.all()
+    replay_serializer = ReplySerializer(replies,many=True)
     return Response ({"replay":replay_serializer.data})
