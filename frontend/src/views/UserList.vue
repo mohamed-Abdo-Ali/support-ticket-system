@@ -15,20 +15,21 @@ const fetchUsers = async () => {
     const response = await axios.get('/api/users/')
     users.value = response.data
   } catch (err) {
-    error.value = locale.value === 'ar' ? 'فشل تحميل قائمة المستخدمين.' : 'Failed to load user list.'
+    error.value = t('Failed to load user list.')
   } finally {
     loading.value = false
   }
 }
 
 const handleDeleteUser = async (id, username) => {
-  const confirmMsg = locale.value === 'ar' ? `هل أنت متأكد من حذف المستخدم ${username}؟` : `Are you sure you want to delete user ${username}?`
+  // استخدام دالة الترجمة مع دمج المتغير بشكل مرن وقابل للترجمة الديناميكية
+  const confirmMsg = t('Are you sure you want to delete user {username}?').replace('{username}', username)
   if (!confirm(confirmMsg)) return
   try {
     await axios.delete(`/api/users/${id}/`)
     users.value = users.value.filter(u => u.id !== id)
   } catch (err) {
-    alert(err.response?.data?.detail || (locale.value === 'ar' ? 'فشل حذف المستخدم.' : 'Failed to delete user.'))
+    alert(err.response?.data?.detail || t('Failed to delete user.'))
   }
 }
 
@@ -52,20 +53,20 @@ onMounted(() => {
     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
       <div>
         <h2 style="font-weight: 700; margin-bottom: 0.25rem;">
-          {{ locale === 'ar' ? 'إدارة المستخدمين' : 'User Management' }}
+          {{ $t('User Management') }}
         </h2>
         <p class="text-muted" style="margin-bottom: 0;">
-          {{ locale === 'ar' ? 'إدارة حسابات النظام وتعيين الصلاحيات' : 'Manage system accounts and assign privileges' }}
+          {{ $t('Manage system accounts and assign privileges') }}
         </p>
       </div>
       <router-link to="/users/new" class="btn btn-primary">
         <span>➕</span>
-        <span>{{ locale === 'ar' ? 'مستخدم جديد' : 'Add User' }}</span>
+        <span>{{ $t('Add User') }}</span>
       </router-link>
     </div>
 
     <div v-if="loading" style="text-align: center; padding: 3rem;">
-      <p>{{ locale === 'ar' ? 'جاري تحميل قائمة المستخدمين...' : 'Loading user list...' }}</p>
+      <p>{{ $t('Loading user list...') }}</p>
     </div>
 
     <div v-else-if="error" class="alert alert-danger">
@@ -77,13 +78,13 @@ onMounted(() => {
         <table>
           <thead>
             <tr>
-              <th>{{ locale === 'ar' ? 'اسم المستخدم' : 'Username' }}</th>
-              <th>{{ locale === 'ar' ? 'الاسم الكامل' : 'Full Name' }}</th>
-              <th>{{ locale === 'ar' ? 'البريد الإلكتروني' : 'Email Address' }}</th>
-              <th>{{ locale === 'ar' ? 'الدور / الصلاحيات' : 'Role / Permissions' }}</th>
-              <th>{{ locale === 'ar' ? 'عدد التذاكر' : 'Ticket Count' }}</th>
-              <th>{{ locale === 'ar' ? 'تاريخ الانضمام' : 'Joined Date' }}</th>
-              <th style="text-align: end;">{{ locale === 'ar' ? 'إجراءات' : 'Actions' }}</th>
+              <th>{{ $t('Username') }}</th>
+              <th>{{ $t('Full Name') }}</th>
+              <th>{{ $t('Email Address') }}</th>
+              <th>{{ $t('Role / Permissions') }}</th>
+              <th>{{ $t('Ticket Count') }}</th>
+              <th>{{ $t('Joined Date') }}</th>
+              <th style="text-align: end;">{{ $t('Actions') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -96,13 +97,13 @@ onMounted(() => {
               <td>
                 <div style="display: flex; gap: 0.25rem; flex-wrap: wrap;">
                   <span v-if="u.is_superuser" class="badge badge-high" style="font-size: 0.7rem;">
-                    {{ locale === 'ar' ? 'مدير النظام' : 'Manager / Admin' }}
+                    {{ $t('Manager / Admin') }}
                   </span>
                   <span v-if="u.is_staff && !u.is_superuser" class="badge badge-open" style="font-size: 0.7rem;">
-                    {{ locale === 'ar' ? 'موظف دعم' : 'Support Staff' }}
+                    {{ $t('Support Staff') }}
                   </span>
                   <span v-if="!u.is_staff && !u.is_superuser" class="badge badge-resolved" style="font-size: 0.7rem;">
-                    {{ locale === 'ar' ? 'مستخدم عادي' : 'Regular User' }}
+                    {{ $t('Regular User') }}
                   </span>
                 </div>
               </td>
@@ -129,7 +130,7 @@ onMounted(() => {
     </div>
 
     <div class="card" v-else style="text-align: center; padding: 4rem 2rem;">
-      <p class="text-muted">{{ locale === 'ar' ? 'لا يوجد مستخدمون في النظام.' : 'No users found in the system.' }}</p>
+      <p class="text-muted">{{ $t('No users found in the system.') }}</p>
     </div>
   </div>
 </template>

@@ -21,7 +21,7 @@ const handleRegister = async () => {
   loading.value = true
   try {
     await auth.register(username.value, fullname.value, email.value, password.value)
-    success.value = locale.value === 'ar' ? 'تم إنشاء الحساب بنجاح! سيتم تحويلك لصفحة الدخول.' : 'Registration successful! Redirecting to login...'
+    success.value = t('Registration successful! Redirecting to login...')
     setTimeout(() => {
       router.push('/login')
     }, 2000)
@@ -29,7 +29,7 @@ const handleRegister = async () => {
     if (err.response && err.response.data && err.response.data.detail) {
       error.value = err.response.data.detail
     } else {
-      error.value = locale.value === 'ar' ? 'فشل التسجيل. يرجى التحقق من المدخلات.' : 'Registration failed. Please check inputs.'
+      error.value = t('Registration failed. Please check inputs.')
     }
   } finally {
     loading.value = false
@@ -40,7 +40,7 @@ const handleRegister = async () => {
 <template>
   <div class="auth-page">
     <div class="auth-card">
-      <h2 class="auth-title">{{ locale === 'ar' ? 'إنشاء حساب جديد' : 'Sign Up' }}</h2>
+      <h2 class="auth-title">{{ $t('Sign Up') }}</h2>
       
       <div v-if="error" class="alert alert-danger">
         <span>⚠️</span>
@@ -54,34 +54,34 @@ const handleRegister = async () => {
 
       <form @submit.prevent="handleRegister" v-if="!success">
         <div class="form-group">
-          <label class="form-label">{{ locale === 'ar' ? 'الاسم الكامل' : 'Full Name' }}</label>
+          <label class="form-label">{{ $t('Full Name') }}</label>
           <input type="text" v-model="fullname" class="form-control" required placeholder="Ahmed Ali..." />
         </div>
 
         <div class="form-group">
-          <label class="form-label">{{ t('Username') || (locale === 'ar' ? 'اسم المستخدم' : 'Username') }}</label>
+          <label class="form-label">{{ $t('Username') }}</label>
           <input type="text" v-model="username" class="form-control" required placeholder="ahmed12..." />
         </div>
 
         <div class="form-group">
-          <label class="form-label">{{ locale === 'ar' ? 'البريد الإلكتروني' : 'Email Address' }}</label>
+          <label class="form-label">{{ $t('Email Address') }}</label>
           <input type="email" v-model="email" class="form-control" required placeholder="ahmed@example.com" />
         </div>
 
         <div class="form-group">
-          <label class="form-label">{{ locale === 'ar' ? 'كلمة المرور' : 'Password' }}</label>
+          <label class="form-label">{{ $t('Password') }}</label>
           <input type="password" v-model="password" class="form-control" required placeholder="..." />
         </div>
 
         <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;" :disabled="loading">
-          {{ loading ? (locale === 'ar' ? 'جاري التسجيل...' : 'Creating account...') : (locale === 'ar' ? 'إنشاء حساب' : 'Register') }}
+          {{ loading ? $t('Creating account...') : $t('Register') }}
         </button>
       </form>
 
       <div style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem;">
-        <span>{{ locale === 'ar' ? 'لديك حساب بالفعل؟' : 'Already have an account?' }}</span>
+        <span>{{ $t('Already have an account?') }}</span>
         <router-link to="/login" style="margin-inline-start: 0.5rem; font-weight: 600;">
-          {{ locale === 'ar' ? 'سجل الدخول هنا' : 'Login here' }}
+          {{ $t('Login here') }}
         </router-link>
       </div>
     </div>

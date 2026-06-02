@@ -33,7 +33,8 @@ const fetchUserDetails = async () => {
     isStaff.value = response.data.is_staff
     isSuperuser.value = response.data.is_superuser
   } catch (err) {
-    error.value = locale.value === 'ar' ? 'فشل تحميل بيانات المستخدم.' : 'Failed to load user details.'
+    // ترجمة ديناميكية لرسالة الخطأ باستخدام t()
+    error.value = t('Failed to load user details.')
   } finally {
     fetching.value = false
   }
@@ -42,11 +43,11 @@ const fetchUserDetails = async () => {
 const handleSubmit = async () => {
   error.value = ''
   if (!username.value) {
-    error.value = locale.value === 'ar' ? 'اسم المستخدم مطلوب.' : 'Username is required.'
+    error.value = t('Username is required.')
     return
   }
   if (!isEditMode.value && !password.value) {
-    error.value = locale.value === 'ar' ? 'كلمة المرور مطلوبة.' : 'Password is required.'
+    error.value = t('Password is required.')
     return
   }
 
@@ -71,7 +72,7 @@ const handleSubmit = async () => {
     }
     router.push('/users')
   } catch (err) {
-    error.value = err.response?.data?.detail || err.response?.data?.username?.[0] || (locale.value === 'ar' ? 'فشل حفظ التعديلات.' : 'Failed to save changes.')
+    error.value = err.response?.data?.detail || err.response?.data?.username?.[0] || t('Failed to save changes.')
   } finally {
     loading.value = false
   }
@@ -88,19 +89,23 @@ onMounted(() => {
   <div style="max-width: 600px; margin: 0 auto;">
     <div style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; align-items: center; font-size: 0.9rem;">
       <router-link to="/users" style="font-weight: 500;">
-        {{ locale === 'ar' ? 'المستخدمين' : 'Users' }}
+        {{ $t('Users') }}
       </router-link>
       <span class="text-muted">/</span>
-      <span class="text-muted">{{ isEditMode ? (locale === 'ar' ? 'تعديل مستخدم' : 'Edit User') : (locale === 'ar' ? 'إضافة مستخدم' : 'New User') }}</span>
+      <span class="text-muted">
+        {{ isEditMode ? $t('Edit User') : $t('New User') }}
+      </span>
     </div>
 
     <div class="card">
       <div class="card-header">
-        <span>{{ isEditMode ? (locale === 'ar' ? 'تعديل بيانات المستخدم' : 'Edit User Profile') : (locale === 'ar' ? 'إضافة مستخدم جديد' : 'Create New Account') }}</span>
+        <span>
+          {{ isEditMode ? $t('Edit User Profile') : $t('Create New Account') }}
+        </span>
       </div>
       <div class="card-body">
         <div v-if="fetching" style="text-align: center; padding: 2rem;">
-          <p>{{ locale === 'ar' ? 'جاري تحميل البيانات...' : 'Loading...' }}</p>
+          <p>{{ $t('Loading...') }}</p>
         </div>
 
         <form v-else @submit.prevent="handleSubmit">
@@ -110,45 +115,47 @@ onMounted(() => {
           </div>
 
           <div class="form-group">
-            <label class="form-label">{{ locale === 'ar' ? 'اسم المستخدم' : 'Username' }}</label>
+            <label class="form-label">{{ $t('Username') }}</label>
             <input type="text" v-model="username" class="form-control" required placeholder="username..." />
           </div>
 
           <div class="form-group">
-            <label class="form-label">{{ locale === 'ar' ? 'الاسم الكامل' : 'Full Name' }}</label>
+            <label class="form-label">{{ $t('Full Name') }}</label>
             <input type="text" v-model="fullname" class="form-control" placeholder="Full name..." />
           </div>
 
           <div class="form-group">
-            <label class="form-label">{{ locale === 'ar' ? 'البريد الإلكتروني' : 'Email Address' }}</label>
+            <label class="form-label">{{ $t('Email Address') }}</label>
             <input type="email" v-model="email" class="form-control" placeholder="user@example.com" />
           </div>
 
           <div class="form-group">
-            <label class="form-label">{{ isEditMode ? (locale === 'ar' ? 'تعديل كلمة المرور (اختياري)' : 'Change Password (Optional)') : (locale === 'ar' ? 'كلمة المرور' : 'Password') }}</label>
+            <label class="form-label">
+              {{ isEditMode ? $t('Change Password (Optional)') : $t('Password') }}
+            </label>
             <input type="password" v-model="password" class="form-control" :required="!isEditMode" placeholder="••••••••" />
           </div>
 
           <div class="form-check">
             <input type="checkbox" id="isStaff" v-model="isStaff" />
             <label for="isStaff" class="form-label" style="display: inline; margin-bottom: 0; cursor: pointer;">
-              {{ locale === 'ar' ? 'موظف دعم فني (Staff)' : 'Support Staff (is_staff)' }}
+              {{ $t('Support Staff (is_staff)') }}
             </label>
           </div>
 
           <div class="form-check" style="margin-bottom: 2rem;">
             <input type="checkbox" id="isSuperuser" v-model="isSuperuser" />
             <label for="isSuperuser" class="form-label" style="display: inline; margin-bottom: 0; cursor: pointer;">
-              {{ locale === 'ar' ? 'مدير نظام (Superuser)' : 'System Manager (is_superuser)' }}
+              {{ $t('System Manager (is_superuser)') }}
             </label>
           </div>
 
           <div style="display: flex; gap: 1rem;">
             <button type="submit" class="btn btn-primary" :disabled="loading">
-              {{ loading ? (locale === 'ar' ? 'جاري الحفظ...' : 'Saving...') : (locale === 'ar' ? 'حفظ التغييرات' : 'Save Changes') }}
+              {{ loading ? $t('Saving...') : $t('Save Changes') }}
             </button>
             <button type="button" @click="$router.push('/users')" class="btn btn-outline">
-              {{ locale === 'ar' ? 'إلغاء' : 'Cancel' }}
+              {{ $t('Cancel') }}
             </button>
           </div>
         </form>

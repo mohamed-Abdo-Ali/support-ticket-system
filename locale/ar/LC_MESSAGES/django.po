@@ -1336,3 +1336,636 @@ msgstr "مجتمع Django"
 #: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:236
 msgid "Connect, get help, or contribute"
 msgstr "تواصل، احصل على المساعدة، أو ساهم"
+msgid "SUPPORT CORE"
+msgstr "نظام الدعم"
+
+msgid "Dashboard"
+msgstr "لوحة التحكم"
+
+msgid "Tickets"
+msgstr "التذاكر"
+
+msgid "User Management"
+msgstr "إدارة المستخدمين"
+
+msgid "My Profile"
+msgstr "ملفي الشخصي"
+
+msgid "Logout"
+msgstr "تسجيل الخروج"
+
+msgid "Login"
+msgstr "تسجيل الدخول"
+
+msgid "Get Started"
+msgstr "البدء الآن"
+
+msgid "Support Ticket System"
+msgstr "نظام تذاكر الدعم الفني"
+
+msgid "Failed to load dashboard data."
+msgstr "فشل تحميل بيانات لوحة التحكم."
+
+msgid "Loading dashboard..."
+msgstr "جاري تحميل لوحة التحكم..."
+
+msgid "Total Tickets"
+msgstr "إجمالي التذاكر"
+
+msgid "Open"
+msgstr "مفتوحة"
+
+msgid "Resolved"
+msgstr "تم حلها"
+
+msgid "Critical"
+msgstr "عالية الأهمية"
+
+msgid "System Activity Overview"
+msgstr "نظرة عامة على النشاط"
+
+msgid "Ticket Status"
+msgstr "حالة التذاكر"
+
+msgid "Browse Tickets"
+msgstr "استعراض التذاكر"
+
+msgid "New Support Request"
+msgstr "طلب دعم جديد"
+
+msgid "Login failed. Please check credentials."
+msgstr "فشل تسجيل الدخول. يرجى التحقق من البيانات."
+
+msgid "Sign In"
+msgstr "تسجيل الدخول"
+
+msgid "Password"
+msgstr "كلمة المرور"
+
+msgid "Signing in..."
+msgstr "جاري التحميل..."
+
+msgid "Register here"
+msgstr "إنشاء حساب جديد"
+
+msgid "Failed to load profile."
+msgstr "فشل تحميل بيانات الملف الشخصي."
+
+msgid "Profile updated successfully."
+msgstr "تم تحديث الملف الشخصي بنجاح."
+
+msgid "Failed to update profile."
+msgstr "فشل تحديث البيانات."
+
+msgid "Loading..."
+msgstr "جاري تحميل البيانات..."
+
+msgid "Full Name"
+msgstr "الاسم الكامل"
+
+msgid "Email Address"
+msgstr "البريد الإلكتروني"
+
+msgid "Change Password (Optional)"
+msgstr "تعديل كلمة المرور (اختياري)"
+
+msgid "Leave blank if you do not want to change it."
+msgstr "اتركه فارغاً إذا كنت لا ترغب في التغيير."
+
+msgid "Saving..."
+msgstr "جاري الحفظ..."
+
+msgid "Save Changes"
+msgstr "حفظ التغييرات"
+
+msgid "Registration successful! Redirecting to login..."
+msgstr "تم إنشاء الحساب بنجاح! سيتم تحويلك لصفحة الدخول."
+
+msgid "Registration failed. Please check inputs."
+msgstr "فشل التسجيل. يرجى التحقق من المدخلات."
+
+msgid "Sign Up"
+msgstr "إنشاء حساب جديد"
+
+msgid "Creating account..."
+msgstr "جاري التسجيل..."
+
+msgid "Register"
+msgstr "إنشاء حساب"
+
+msgid "Already have an account?"
+msgstr "لديك حساب بالفعل؟"
+
+msgid "Login here"
+msgstr "سجل الدخول هنا"
+
+msgid "Failed to load ticket details."
+msgstr "فشل تحميل تفاصيل التذكرة."
+
+msgid "Reply added successfully."
+msgstr "تم إضافة الرد بنجاح."
+
+msgid "Failed to add reply."
+msgstr "فشل إضافة الرد."
+
+msgid "Ticket status updated."
+msgstr "تم تحديث حالة التذكرة."
+
+msgid "Failed to update status."
+msgstr "فشل تحديث الحالة."
+
+msgid "Archive this ticket?"
+msgstr "هل أنت متأكد من أرشفة هذه التذكرة؟"
+
+msgid "Failed to delete ticket."
+msgstr "فشل حذف التذكرة."
+
+msgid "en-US"
+msgstr "ar-EG"
+
+msgid "Loading ticket details..."
+msgstr "جاري تحميل تفاصيل التذكرة..."
+
+msgid "Issue Description"
+msgstr "وصف المشكلة"
+
+msgid "Attachment"
+msgstr "المرفقات"
+
+msgid "Support Thread"
+msgstr "سجل المحادثة"
+
+msgid "STAFF"
+msgstr "موظف"
+
+msgid "Prev"
+msgstr "السابق"
+
+msgid "Page"
+msgstr "صفحة"
+
+msgid "Next"
+msgstr "التالي"
+
+msgid "No messages in this thread yet."
+msgstr "لا توجد رسائل في هذه المحادثة بعد."
+
+msgid "Compose Reply"
+msgstr "كتابة رد"
+
+msgid "Your professional response..."
+msgstr "اكتب ردك الاحترافي هنا..."
+
+msgid "Send Response"
+msgstr "إرسال الرد"
+
+msgid "As a Manager, you are in View Only mode. Only assigned support staff can reply."
+msgstr "بصفتك مديراً، أنت في وضع العرض فقط. الموظفون المختصون فقط هم من يمكنهم الرد."
+
+msgid "Our support engineers are reviewing your ticket. You\"
+msgstr "مهندسو الدعم لدينا يراجعون تذكرتك حالياً. سيتم إخطارك بأي تحديثات."
+
+msgid "This ticket is closed and archived. No further action is possible."
+msgstr "هذه التذكرة مغلقة ومؤرشفة. لا يمكن اتخاذ أي إجراء آخر."
+
+msgid "Staff Actions"
+msgstr "إجراءات الإشراف"
+
+msgid "Update Status"
+msgstr "تحديث الحالة"
+
+msgid "In Progress"
+msgstr "قيد التنفيذ"
+
+msgid "Closed"
+msgstr "مغلقة"
+
+msgid "Archive Ticket"
+msgstr "أرشفة السجل"
+
+msgid "Only closed tickets can be removed from the system."
+msgstr "التذاكر المغلقة فقط يمكن حذفها من النظام."
+
+msgid "Delete Record"
+msgstr "حذف السجل"
+
+msgid "Subject must be at least 5 characters."
+msgstr "يجب أن يكون الموضوع 5 أحرف على الأقل."
+
+msgid "Failed to create ticket."
+msgstr "فشل إنشاء التذكرة."
+
+msgid "New Ticket"
+msgstr "تذكرة جديدة"
+
+msgid "Subject"
+msgstr "الموضوع"
+
+msgid "Enter subject detail..."
+msgstr "أدخل موضوع المشكلة المحددة..."
+
+msgid "Detailed Description"
+msgstr "الوصف التفصيلي"
+
+msgid "Describe your problem in detail..."
+msgstr "صف المشكلة التي تواجهها بالتفصيل..."
+
+msgid "Priority"
+msgstr "الأولوية"
+
+msgid "Low"
+msgstr "منخفضة"
+
+msgid "Medium"
+msgstr "متوسطة"
+
+msgid "High"
+msgstr "عالية"
+
+msgid "Category"
+msgstr "التصنيف"
+
+msgid "General"
+msgstr "عام"
+
+msgid "Technical"
+msgstr "تقني"
+
+msgid "Billing"
+msgstr "فواتير"
+
+msgid "Attachment (Image)"
+msgstr "المرفقات (صورة)"
+
+msgid "Submitting..."
+msgstr "جاري الإرسال..."
+
+msgid "Submit Ticket"
+msgstr "إرسال الطلب"
+
+msgid "Cancel"
+msgstr "إلغاء"
+
+msgid "Failed to load tickets."
+msgstr "فشل تحميل التذاكر."
+
+msgid "Ticket Repository"
+msgstr "مستودع التذاكر"
+
+msgid "Browse and manage all support interactions"
+msgstr "استعرض وإدارة جميع طلبات الدعم"
+
+msgid "Quick Search"
+msgstr "بحث سريع"
+
+msgid "Subject or Keyword..."
+msgstr "الموضوع أو كلمة مفتاحية..."
+
+msgid "Status"
+msgstr "الحالة"
+
+msgid "All Statuses"
+msgstr "جميع الحالات"
+
+msgid "All Priorities"
+msgstr "جميع الأولويات"
+
+msgid "Filter"
+msgstr "تصفية"
+
+msgid "Reset"
+msgstr "إعادة تعيين"
+
+msgid "Ticket"
+msgstr "التذكرة"
+
+msgid "Owner"
+msgstr "المالك"
+
+msgid "Created At"
+msgstr "تاريخ الإنشاء"
+
+msgid "Overdue"
+msgstr "متأخرة"
+
+msgid "No tickets found"
+msgstr "لا توجد تذاكر"
+
+msgid "No tickets match your selection."
+msgstr "لا توجد تذاكر تطابق معايير البحث."
+
+msgid "Loading tickets..."
+msgstr "جاري تحميل التذاكر..."
+
+msgid "Failed to load user details."
+msgstr "فشل تحميل بيانات المستخدم."
+
+msgid "Loading user details..."
+msgstr "جاري تحميل تفاصيل المستخدم..."
+
+msgid "User Account Info"
+msgstr "بيانات الحساب"
+
+msgid "Edit"
+msgstr "تعديل البيانات"
+
+msgid "Privileges"
+msgstr "الصلاحيات"
+
+msgid "Superuser"
+msgstr "مدير نظام"
+
+msgid "Support Staff"
+msgstr "موظف دعم"
+
+msgid "Regular User"
+msgstr "مستخدم عادي"
+
+msgid "User Tickets History"
+msgstr "التذاكر الخاصة بالمستخدم"
+
+msgid "No tickets registered for this user."
+msgstr "لا توجد تذاكر مسجلة لهذا المستخدم."
+
+msgid "Username is required."
+msgstr "اسم المستخدم مطلوب."
+
+msgid "Password is required."
+msgstr "كلمة المرور مطلوبة."
+
+msgid "Failed to save changes."
+msgstr "فشل حفظ التعديلات."
+
+msgid "Users"
+msgstr "المستخدمين"
+
+msgid "Edit User"
+msgstr "تعديل مستخدم"
+
+msgid "New User"
+msgstr "إضافة مستخدم"
+
+msgid "Edit User Profile"
+msgstr "تعديل بيانات المستخدم"
+
+msgid "Create New Account"
+msgstr "إضافة مستخدم جديد"
+
+msgid "Support Staff (is_staff)"
+msgstr "موظف دعم فني (Staff)"
+
+msgid "System Manager (is_superuser)"
+msgstr "مدير نظام (Superuser)"
+
+msgid "Failed to load user list."
+msgstr "فشل تحميل قائمة المستخدمين."
+
+msgid "Failed to delete user."
+msgstr "فشل حذف المستخدم."
+
+msgid "Manage system accounts and assign privileges"
+msgstr "إدارة حسابات النظام وتعيين الصلاحيات"
+
+msgid "Add User"
+msgstr "مستخدم جديد"
+
+msgid "Loading user list..."
+msgstr "جاري تحميل قائمة المستخدمين..."
+
+msgid "Role / Permissions"
+msgstr "الدور / الصلاحيات"
+
+msgid "Ticket Count"
+msgstr "عدد التذاكر"
+
+msgid "Joined Date"
+msgstr "تاريخ الانضمام"
+
+msgid "Actions"
+msgstr "إجراءات"
+
+msgid "Manager / Admin"
+msgstr "مدير النظام"
+
+msgid "No users found in the system."
+msgstr "لا يوجد مستخدمون في النظام."
+
+msgid "Are you sure you want to delete user ${username}?"
+msgstr "هل أنت متأكد من حذف المستخدم ${username}؟"
+
+msgid "Loading user details..."
+msgstr 'جاري تحميل تفاصيل المستخدم...'
+
+msgid "Edit"
+msgstr "تعديل البيانات"
+
+msgid "Username"
+msgstr "اسم المستخدم"
+
+msgid "Full Name"
+msgstr "الاسم كامل"
+
+msgid "Email Address"
+msgstr "البريد الالكتروني"
+
+msgid "Privileges"
+msgstr "الصلاحيات"
+
+msgid "Superuser"
+msgstr "مدير النظام"
+
+msgid "Loading user details..."
+msgstr "جاري تحميل بيانات المستخدم..."
+
+msgid "Failed to load user details."
+msgstr "فشل تحميل بيانات المستخدم."
+
+msgid "User Management"
+msgstr "إدارة المستخدمين"
+
+msgid "User Account Info"
+msgstr "بيانات الحساب"
+
+msgid "Edit"
+msgstr "تعديل"
+
+msgid "Username"
+msgstr "اسم المستخدم"
+
+msgid "Full Name"
+msgstr "الاسم الكامل"
+
+msgid "Email Address"
+msgstr "البريد الإلكتروني"
+
+msgid "Privileges"
+msgstr "الصلاحيات"
+
+msgid "Superuser"
+msgstr "مدير النظام"
+
+msgid "Support Staff"
+msgstr "موظف دعم"
+
+msgid "Regular User"
+msgstr "مستخدم عادي"
+
+msgid "User Tickets History"
+msgstr "أرشيف تذاكر المستخدم"
+
+msgid "Loading tickets..."
+msgstr "جاري تحميل التذاكر..."
+
+msgid "Ticket"
+msgstr "التذكرة"
+
+msgid "Priority"
+msgstr "الأولوية"
+
+msgid "Status"
+msgstr "الحالة"
+
+msgid "Category"
+msgstr "التصنيف"
+
+msgid "Created At"
+msgstr "تاريخ الإنشاء"
+
+# ترجمة قيم الأولويات القادمة من قاعدة البيانات
+msgid "High"
+msgstr "عالية"
+
+msgid "Medium"
+msgstr "متوسطة"
+
+msgid "Low"
+msgstr "منخفضة"
+
+# ترجمة قيم الحالات القادمة من قاعدة البيانات
+msgid "Open"
+msgstr "مفتوحة"
+
+msgid "In Progress"
+msgstr "قيد التنفيذ"
+
+msgid "Resolved"
+msgstr "تم حلها"
+
+msgid "Closed"
+msgstr "مغلقة"
+
+# ترجمة قيم التصنيفات القادمة من قاعدة البيانات
+msgid "Technical"
+msgstr "تقني"
+
+msgid "Billing"
+msgstr "فواتير"
+
+msgid "General"
+msgstr "عام"
+
+msgid "No tickets registered for this user."
+msgstr "لا توجد تذاكر مسجلة لهذا المستخدم."
+
+msgid "Users"
+msgstr "المستخدمين"
+
+msgid "Edit User"
+msgstr "تعديل مستخدم"
+
+msgid "New User"
+msgstr "إضافة مستخدم"
+
+msgid "Edit User Profile"
+msgstr "تعديل بيانات المستخدم"
+
+msgid "Create New Account"
+msgstr "إضافة مستخدم جديد"
+
+msgid "Loading..."
+msgstr "جاري تحميل البيانات..."
+
+msgid "Username is required."
+msgstr "اسم المستخدم مطلوب."
+
+msgid "Password is required."
+msgstr "كلمة المرور مطلوبة."
+
+msgid "Failed to save changes."
+msgstr "فشل حفظ التعديلات."
+
+msgid "Change Password (Optional)"
+msgstr "تعديل كلمة المرور (اختياري)"
+
+msgid "Password"
+msgstr "كلمة المرور"
+
+msgid "Support Staff (is_staff)"
+msgstr "موظف دعم فني (Staff)"
+
+msgid "System Manager (is_superuser)"
+msgstr "مدير نظام (Superuser)"
+
+msgid "Saving..."
+msgstr "جاري الحفظ..."
+
+msgid "Save Changes"
+msgstr "حفظ التغييرات"
+
+msgid "Cancel"
+msgstr "إلغاء"
+
+msgid "Failed to load user list."
+msgstr "فشل تحميل قائمة المستخدمين."
+
+msgid "Are you sure you want to delete user {username}?"
+msgstr "هل أنت متأكد من حذف المستخدم {username}؟"
+
+msgid "Failed to delete user."
+msgstr "فشل حذف المستخدم."
+
+msgid "User Management"
+msgstr "إدارة المستخدمين"
+
+msgid "Manage system accounts and assign privileges"
+msgstr "إدارة حسابات النظام وتعيين الصلاحيات"
+
+msgid "Add User"
+msgstr "مستخدم جديد"
+
+msgid "Loading user list..."
+msgstr "جاري تحميل قائمة المستخدمين..."
+
+msgid "Username"
+msgstr "اسم المستخدم"
+
+msgid "Full Name"
+msgstr "الاسم الكامل"
+
+msgid "Email Address"
+msgstr "البريد الإلكتروني"
+
+msgid "Role / Permissions"
+msgstr "الدور / الصلاحيات"
+
+msgid "Ticket Count"
+msgstr "عدد التذاكر"
+
+msgid "Joined Date"
+msgstr "تاريخ الانضمام"
+
+msgid "Actions"
+msgstr "إجراءات"
+
+msgid "Manager / Admin"
+msgstr "مدير النظام"
+
+msgid "Support Staff"
+msgstr "موظف دعم"
+
+msgid "Regular User"
+msgstr "مستخدم عادي"
+
+msgid "No users found in the system."
+msgstr "لا يوجد مستخدمون في النظام."
+

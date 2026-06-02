@@ -22,7 +22,7 @@ const handleLogin = async () => {
     if (err.response && err.response.data && err.response.data.detail) {
       error.value = err.response.data.detail
     } else {
-      error.value = locale.value === 'ar' ? 'فشل تسجيل الدخول. يرجى التحقق من البيانات.' : 'Login failed. Please check credentials.'
+      error.value = t('Login failed. Please check credentials.')
     }
   } finally {
     loading.value = false
@@ -33,7 +33,7 @@ const handleLogin = async () => {
 <template>
   <div class="auth-page">
     <div class="auth-card">
-      <h2 class="auth-title">{{ locale === 'ar' ? 'تسجيل الدخول' : 'Sign In' }}</h2>
+      <h2 class="auth-title">{{ $t('Sign In') }}</h2>
       
       <div v-if="error" class="alert alert-danger">
         <span>⚠️</span>
@@ -42,24 +42,24 @@ const handleLogin = async () => {
 
       <form @submit.prevent="handleLogin">
         <div class="form-group">
-          <label class="form-label">{{ t('Username') || (locale === 'ar' ? 'اسم المستخدم' : 'Username') }}</label>
+          <label class="form-label">{{ $t('Username') }}</label>
           <input type="text" v-model="username" class="form-control" required placeholder="..." />
         </div>
 
         <div class="form-group">
-          <label class="form-label">{{ locale === 'ar' ? 'كلمة المرور' : 'Password' }}</label>
+          <label class="form-label">{{ $t('Password') }}</label>
           <input type="password" v-model="password" class="form-control" required placeholder="..." />
         </div>
 
         <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;" :disabled="loading">
-          {{ loading ? (locale === 'ar' ? 'جاري التحميل...' : 'Signing in...') : (locale === 'ar' ? 'تسجيل الدخول' : 'Sign In') }}
+          {{ loading ? $t('Signing in...') : $t('Sign In') }}
         </button>
       </form>
 
       <div style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem;">
         <span>{{ locale === 'ar' ? 'ليس لديك حساب؟' : "Don't have an account?" }}</span>
         <router-link to="/register" style="margin-inline-start: 0.5rem; font-weight: 600;">
-          {{ locale === 'ar' ? 'إنشاء حساب جديد' : 'Register here' }}
+          {{ $t('Register here') }}
         </router-link>
       </div>
     </div>
