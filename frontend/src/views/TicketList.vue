@@ -3,7 +3,10 @@ import { ref, computed, onMounted, watch } from 'vue'
 import axios from 'axios'
 import { authState } from '../auth.js'
 import { i18nState, t } from '../i18n.js'
+import { useRoute } from 'vue-router'
 
+
+const route = useRoute()
 const tickets = ref([])
 const count = ref(0)
 const loading = ref(true)
@@ -16,6 +19,33 @@ const page = ref(1)
 
 const locale = computed(() => i18nState.locale)
 const user = computed(() => authState.user)
+
+
+
+const syncFiltersFromRoute = () => {
+  if (route.query.priority) {
+    const p = route.query.priority.toLowerCase()
+    if (p === 'high') selectedPriority.value = 'High'
+    else if (p === 'medium') selectedPriority.value = 'Medium'
+    else if (p === 'low') selectedPriority.value = 'Low'
+  } else {
+    selectedPriority.value = ''
+  }
+
+
+  if (route.query.status) {
+    const s = route.query.status.toLowerCase()
+    // نقوم بالمطابقة مع القيم المكتوبة في الـ <option value="..."> بصفحتك
+    if (s === 'open') selectedStatus.value = 'Open'
+    else if (s === 'in_progress' || s === 'in progress') selectedStatus.value = 'In Progress'
+    else if (s === 'resolved') selectedStatus.value = 'Resolved'
+    else if (s === 'closed') selectedStatus.value = 'Closed'
+  } else {
+    selectedStatus.value = ''
+  }
+
+}
+
 
 const fetchTickets = async () => {
   loading.value = true
@@ -62,12 +92,21 @@ const formatDate = (dateStr) => {
 }
 
 onMounted(() => {
+  syncFiltersFromRoute()
   fetchTickets()
 })
 
 watch(page, () => {
   fetchTickets()
 })
+
+watch(
+  () => [route.query.priority, route.query.status], 
+  () => {
+    syncFiltersFromRoute()
+    fetchTickets()
+  }
+)
 </script>
 
 <template>

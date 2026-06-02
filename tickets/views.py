@@ -162,10 +162,16 @@ class DashboardView(APIView):
             'open_tickets': base_qs.filter(status='Open').count(), 
             'resolved_tickets': base_qs.filter(status='Resolved').count(), 
             'high_priority_tickets': base_qs.filter(priority='High').count(), 
+            'Low_priority_tickets': base_qs.filter(priority='Low').count(), 
+            'Medium_priority_tickets': base_qs.filter(priority='Medium').count(), 
+            'closed_tickets': base_qs.filter(status='Closed').count(),
+            'in_progress_tickets': base_qs.filter(status='In Progress').count(),
+
             'category_labels': [item['category'] for item in category_data],
             'category_counts': [item['count'] for item in category_data],
             'status_labels': [item['status'] for item in status_data],
             'status_counts': [item['count'] for item in status_data],
+
         }
         return Response(data)
 

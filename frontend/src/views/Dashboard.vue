@@ -7,9 +7,13 @@ import { i18nState, t } from '../i18n.js'
 
 const stats = ref({
   total_tickets: 0,
+  closed_tickets: 0,
+  in_progress_tickets: 0,
   open_tickets: 0,
   resolved_tickets: 0,
   high_priority_tickets: 0,
+  Medium_priority_tickets: 0,
+  Low_priority_tickets: 0,
   category_labels: [],
   category_counts: [],
   status_labels: [],
@@ -101,7 +105,7 @@ const renderCharts = () => {
             y: {
               beginAtZero: true,
               grid: { color: gridColor },
-              ticks: { color: textColor }
+              ticks: { color: textColor, stepSize: 1, },
             },
             x: {
               grid: { display: false },
@@ -145,40 +149,96 @@ watch(locale, () => {
 
     <div v-else>
       <div class="stat-grid">
-        <div class="stat-card stat-total">
+
+        <router-link :to="{ path: '/tickets'  }" >
+          <div class="stat-card stat-total">
+            <div class="stat-icon">📊</div>
+            <div class="stat-content">
+              <h6>{{ $t('Total Tickets') }}</h6>
+              <h3>{{ stats.total_tickets }}</h3>
+            </div>
+          </div>
+        </router-link>
+
+        <router-link :to="{ path: '/tickets', query: { status: 'Open' } }" >
+          <div class="stat-card stat-open">
+            <div class="stat-icon">📩</div>
+            <div class="stat-content">
+              <h6>{{ $t('Open') }}</h6>
+              <h3>{{ stats.open_tickets }}</h3>
+            </div>
+          </div>
+        </router-link>
+
+        <router-link :to="{ path: '/tickets', query: { status: 'Resolved' } }" >
+          <div class="stat-card stat-resolved">
+            <div class="stat-icon">✅</div>
+            <div class="stat-content">
+              <h6>{{ $t('Resolved') }}</h6>
+              <h3>{{ stats.resolved_tickets }}</h3>
+            </div>
+          </div>
+        </router-link>
+
+
+        <router-link :to="{ path: '/tickets', query: { status: 'closed' } }" >
+        <div class="stat-card stat-critical">
           <div class="stat-icon">📊</div>
           <div class="stat-content">
-            <h6>{{ $t('Total Tickets') }}</h6>
-            <h3>{{ stats.total_tickets }}</h3>
+            <h6>{{ $t('closed') }}</h6>
+            <h3>{{ stats.closed_tickets }}</h3>
           </div>
         </div>
+        </router-link>
 
-        <div class="stat-card stat-open">
-          <div class="stat-icon">📩</div>
-          <div class="stat-content">
-            <h6>{{ $t('Open') }}</h6>
-            <h3>{{ stats.open_tickets }}</h3>
-          </div>
-        </div>
-
-        <div class="stat-card stat-resolved">
-          <div class="stat-icon">✅</div>
-          <div class="stat-content">
-            <h6>{{ $t('Resolved') }}</h6>
-            <h3>{{ stats.resolved_tickets }}</h3>
-          </div>
-        </div>
-
+         <router-link :to="{ path: '/tickets', query: { status: 'In Progress' } }" >
+        
         <div class="stat-card stat-critical">
-          <div class="stat-icon">🔥</div>
+          <div class="stat-icon">📊</div>
           <div class="stat-content">
-            <h6>{{ $t('Critical') }}</h6>
-            <h3>{{ stats.high_priority_tickets }}</h3>
+            <h6>{{ $t('In Progress') }}</h6>
+            <h3>{{ stats.in_progress_tickets }}</h3>
           </div>
         </div>
+        </router-link>
+
+        
+        <router-link :to="{ path: '/tickets', query: { priority: 'high' } }" >
+          <div class="stat-card stat-critical">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-content">
+              <h6>{{ $t('Critical') }}</h6>
+              <h3>{{ stats.high_priority_tickets }}</h3>
+            </div>
+          </div>
+        </router-link>
+
+        <router-link :to="{ path: '/tickets', query: { priority: 'Low' } }" >
+          <div class="stat-card stat-critical">
+            <div class="stat-icon">📊</div>
+            <div class="stat-content">
+              <h6>{{ $t('Low') }}</h6>
+              <h3>{{ stats.Low_priority_tickets }}</h3>
+            </div>
+          </div>
+        </router-link>
+        
+        <router-link :to="{ path: '/tickets', query: { priority: 'Medium' } }" >
+          <div class="stat-card stat-critical">
+            <div class="stat-icon">📊</div>
+            <div class="stat-content">
+              <h6>{{ $t('Medium') }}</h6>
+              <h3>{{ stats.Medium_priority_tickets }}</h3>
+            </div>
+          </div>
+        </router-link>
+        
+       
+
       </div>
  
       <div class="layout-columns">
+        
         <div class="card">
           <div class="card-header">
             <span>{{ $t('System Activity Overview') }}</span>
@@ -200,6 +260,8 @@ watch(locale, () => {
             </div>
           </div>
         </div>
+
+        
       </div> 
 
       <div style="display: flex; justify-content: center; gap: 1.5rem; margin-top: 3rem; margin-bottom: 2rem;">
@@ -212,6 +274,8 @@ watch(locale, () => {
           <span>{{ $t('New Support Request') }}</span>
         </router-link>
       </div>
+
+      
     </div>
   </div>
 </template>

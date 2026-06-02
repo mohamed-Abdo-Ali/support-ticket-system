@@ -1969,3 +1969,5 @@ msgstr "مستخدم عادي"
 msgid "No users found in the system."
 msgstr "لا يوجد مستخدمون في النظام."
 
+msgid "closed"
+msgstr "مغلقة"
