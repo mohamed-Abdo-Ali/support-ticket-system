@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 import axios from 'axios'
 
-const API_URL = 'http://localhost:8000'
+const API_URL = 'https://mohammed1ali.pythonanywhere.com'
 axios.defaults.baseURL = API_URL
 
 export const authState = reactive({
