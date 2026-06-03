@@ -143,7 +143,10 @@ LOCALE_PATHS = [
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+# STATICFILES_DIRS = [BASE_DIR / 'static']
+STATICFILES_DIRS = [
+    BASE_DIR / 'frontend/dist', # أو المسار الفعلي لمجلد dist الحاوي على ملفات Vue
+]
 
 STATIC_ROOT = 'staticfiles'
 
