@@ -33,7 +33,7 @@ ALLOWED_HOSTS = ['mohammed1ali.pythonanywhere.com', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
 
-    
+
 
     'tickets',
     'replies',
@@ -149,7 +149,7 @@ LOCALE_PATHS = [
 STATIC_URL = 'static/'
 # STATICFILES_DIRS = [BASE_DIR / 'static']
 STATICFILES_DIRS = [
-    BASE_DIR / 'frontend/dist', # أو المسار الفعلي لمجلد dist الحاوي على ملفات Vue
+    BASE_DIR / 'frontend/dist/assets', # أو المسار الفعلي لمجلد dist الحاوي على ملفات Vue
 ]
 
 STATIC_ROOT = 'staticfiles'
