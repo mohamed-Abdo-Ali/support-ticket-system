@@ -30,7 +30,9 @@ ALLOWED_HOSTS = ['mohammed1ali.pythonanywhere.com', 'localhost', '127.0.0.1']
 
 # Application definition
 
+
 INSTALLED_APPS = [
+    
     'tickets',
     'replies',
     'rest_framework',
