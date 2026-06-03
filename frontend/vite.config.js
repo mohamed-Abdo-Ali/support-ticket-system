@@ -10,6 +10,7 @@ export default defineConfig({
     vue(),
     vueDevTools(),
   ],
+  base: '/static/', // 👈 أضف هذا السطر هنا بدقة ليصبح مسار الملفات صحيحاً لجينغو
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
