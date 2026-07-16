@@ -1,132 +1,58 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
-import { authState } from '../auth.js'
-import { i18nState, t } from '../i18n.js'
+import { t } from '../i18n.js'
+import { useTicketDetailViewModel } from '../viewmodels/useTicketDetailViewModel.js'
 
 const route = useRoute()
 const router = useRouter()
 const ticketId = route.params.id
 
-const ticket = ref(null)
-const replies = ref([])
-const repliesCount = ref(0)
-const repliesPage = ref(1)
-const repliesHasNext = ref(false)
-const repliesHasPrev = ref(false)
+const {
+  ticket,
+  replies,
+  repliesPage,
+  repliesHasNext,
+  repliesHasPrev,
+  replyText,
+  newStatus,
+  loading,
+  repliesLoading,
+  actionLoading,
+  error,
+  message,
+  locale,
+  user,
+  isSupportStaff,
+  isAnyStaff,
+  fetchTicketDetails,
+  fetchReplies,
+  handleAddReply,
+  handleUpdateStatus,
+  handleDeleteTicket,
+  formatDate
+} = useTicketDetailViewModel()
 
-const replyText = ref('')
-const newStatus = ref('')
-
-const loading = ref(true)
-const repliesLoading = ref(false)
-const actionLoading = ref(false)
-const error = ref('')
-const message = ref('')
-
-const locale = computed(() => i18nState.locale)
-const user = computed(() => authState.user)
-
-const isSupportStaff = computed(() => user.value && user.value.is_staff && !user.value.is_superuser)
-const isAnyStaff = computed(() => user.value && user.value.is_staff)
-
-const fetchTicketDetails = async () => {
-  loading.value = true
-  try {
-    const response = await axios.get(`/api/tickets/${ticketId}/`)
-    ticket.value = response.data
-    newStatus.value = ticket.value.status
-    await fetchReplies()
-  } catch (err) {
-    error.value = t('Failed to load ticket details.')
-  } finally {
-    loading.value = false
-  }
+const getReplies = () => {
+  fetchReplies(ticketId)
 }
 
-const fetchReplies = async () => {
-  repliesLoading.value = true
-  try {
-    const response = await axios.get(`/api/replies/`, {
-      params: { ticket: ticketId, page: repliesPage.value }
-    })
-    replies.value = response.data.results
-    repliesCount.value = response.data.count
-    repliesHasNext.value = response.data.has_next
-    repliesHasPrev.value = response.data.has_previous
-  } catch (err) {
-    console.error('Failed to load replies', err)
-  } finally {
-    repliesLoading.value = false
-  }
+const addReply = () => {
+  handleAddReply(ticketId, t)
 }
 
-const handleAddReply = async () => {
-  if (!replyText.value.trim()) return
-  actionLoading.value = true
-  error.value = ''
-  message.value = ''
-  try {
-    await axios.post('/api/replies/', {
-      ticket: ticketId,
-      message: replyText.value
-    })
-    replyText.value = ''
-    repliesPage.value = 1
-    await fetchReplies()
-    message.value = t('Reply added successfully.')
-  } catch (err) {
-    error.value = err.response?.data?.detail || t('Failed to add reply.')
-  } finally {
-    actionLoading.value = false
-  }
+const updateStatus = () => {
+  handleUpdateStatus(ticketId, t)
 }
 
-const handleUpdateStatus = async () => {
-  actionLoading.value = true
-  error.value = ''
-  message.value = ''
-  try {
-    const response = await axios.put(`/api/tickets/${ticketId}/`, {
-      status: newStatus.value
-    })
-    ticket.value = response.data
-    message.value = t('Ticket status updated.')
-  } catch (err) {
-    error.value = err.response?.data?.detail || t('Failed to update status.')
-  } finally {
-    actionLoading.value = false
-  }
-}
-
-const handleDeleteTicket = async () => {
-  if (!confirm(t('Archive this ticket?'))) return
-  actionLoading.value = true
-  error.value = ''
-  try {
-    await axios.delete(`/api/tickets/${ticketId}/`)
+const deleteTicket = () => {
+  handleDeleteTicket(ticketId, t, () => {
     router.push('/tickets')
-  } catch (err) {
-    error.value = err.response?.data?.detail || t('Failed to delete ticket.')
-    actionLoading.value = false
-  }
-}
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
-  return date.toLocaleString(locale.value === 'ar' ? 'ar-EG' : 'en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
   })
 }
 
 onMounted(() => {
-  fetchTicketDetails()
+  fetchTicketDetails(ticketId, t)
 })
 </script>
 
@@ -218,11 +144,11 @@ onMounted(() => {
           </div>
 
           <div class="pagination" v-if="repliesHasNext || repliesHasPrev">
-            <button :disabled="!repliesHasPrev" @click="repliesPage--; fetchReplies();" class="page-btn">
+            <button :disabled="!repliesHasPrev" @click="repliesPage--; getReplies();" class="page-btn">
               {{ $t('Prev') }}
             </button>
             <span class="page-info">{{ $t('Page') }} {{ repliesPage }}</span>
-            <button :disabled="!repliesHasNext" @click="repliesPage++; fetchReplies();" class="page-btn">
+            <button :disabled="!repliesHasNext" @click="repliesPage++; getReplies();" class="page-btn">
               {{ $t('Next') }}
             </button>
           </div>
@@ -237,7 +163,7 @@ onMounted(() => {
           <div class="card" v-if="isSupportStaff" style="margin-top: 2rem;">
             <div class="card-body">
               <h6 class="form-label">{{ $t('Compose Reply') }}</h6>
-              <form @submit.prevent="handleAddReply">
+              <form @submit.prevent="addReply">
                 <div class="form-group">
                   <textarea v-model="replyText" class="form-control" rows="4" :placeholder="$t('Your professional response...')" required></textarea>
                 </div>
@@ -283,7 +209,7 @@ onMounted(() => {
                   <option value="Resolved">{{ $t('Resolved') }}</option>
                   <option value="Closed">{{ $t('Closed') }}</option>
                 </select>
-                <button @click="handleUpdateStatus" class="btn btn-primary btn-sm" :disabled="actionLoading || newStatus === ticket.status">
+                <button @click="updateStatus" class="btn btn-primary btn-sm" :disabled="actionLoading || newStatus === ticket.status">
                   {{ $t('Update Status') }}
                 </button>
               </div>
@@ -294,7 +220,7 @@ onMounted(() => {
               <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 0.75rem;">
                 {{ $t('Only closed tickets can be removed from the system.') }}
               </p>
-              <button @click="handleDeleteTicket" class="btn btn-danger btn-sm" style="width: 100%;" :disabled="actionLoading">
+              <button @click="deleteTicket" class="btn btn-danger btn-sm" style="width: 100%;" :disabled="actionLoading">
                 {{ $t('Delete Record') }}
               </button>
             </div>

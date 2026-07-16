@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { auth } from '../auth.js'
+import { useAuthViewModel } from '../viewmodels/useAuthViewModel.js'
 import { i18nState, t } from '../i18n.js'
 
 const router = useRouter()
@@ -10,30 +10,25 @@ const fullname = ref('')
 const email = ref('')
 const password = ref('')
 const showPassword = ref(false)
-const error = ref('')
 const success = ref('')
-const loading = ref(false)
+
+const { register, loading, error } = useAuthViewModel()
 
 const locale = computed(() => i18nState.locale)
 
 const handleRegister = async () => {
   error.value = ''
   success.value = ''
-  loading.value = true
   try {
-    await auth.register(username.value, fullname.value, email.value, password.value)
+    await register(username.value, fullname.value, email.value, password.value)
     success.value = t('Registration successful! Redirecting to login...')
     setTimeout(() => {
       router.push('/login')
     }, 2000)
   } catch (err) {
-    if (err.response && err.response.data && err.response.data.detail) {
-      error.value = err.response.data.detail
-    } else {
+    if (!error.value) {
       error.value = t('Registration failed. Please check inputs.')
     }
-  } finally {
-    loading.value = false
   }
 }
 </script>

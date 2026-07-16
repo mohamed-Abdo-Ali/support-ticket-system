@@ -1,25 +1,23 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import axios from 'axios'
-import { auth } from '../auth.js'
+import { useAuthViewModel } from '../viewmodels/useAuthViewModel.js'
 import { i18nState, t } from '../i18n.js'
 
 const fullname = ref('')
 const email = ref('')
 const password = ref('')
 const showPassword = ref(false)
-
-const error = ref('')
 const message = ref('')
-const loading = ref(false)
 const fetching = ref(true)
+
+const { fetchProfile, updateProfile, loading, error } = useAuthViewModel()
 
 const locale = computed(() => i18nState.locale)
 
-const fetchProfile = async () => {
+const getProfile = async () => {
   fetching.value = true
   try {
-    const data = await auth.fetchProfile()
+    const data = await fetchProfile()
     fullname.value = data.fullname || ''
     email.value = data.email || ''
   } catch (err) {
@@ -32,25 +30,23 @@ const fetchProfile = async () => {
 const handleUpdate = async () => {
   error.value = ''
   message.value = ''
-  loading.value = true
   try {
-    await axios.post('/api/profile/', {
+    await updateProfile({
       fullname: fullname.value,
       email: email.value,
       password: password.value || undefined
     })
     password.value = ''
-    await auth.fetchProfile()
     message.value = t('Profile updated successfully.')
   } catch (err) {
-    error.value = err.response?.data?.detail || t('Failed to update profile.')
-  } finally {
-    loading.value = false
+    if (!error.value) {
+      error.value = t('Failed to update profile.')
+    }
   }
 }
 
 onMounted(() => {
-  fetchProfile()
+  getProfile()
 })
 </script>
 

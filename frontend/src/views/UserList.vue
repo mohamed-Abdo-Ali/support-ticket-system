@@ -1,50 +1,23 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import axios from 'axios'
-import { i18nState, t } from '../i18n.js'
+import { onMounted } from 'vue'
+import { t } from '../i18n.js'
+import { useUserViewModel } from '../viewmodels/useUserViewModel.js'
 
-const users = ref([])
-const loading = ref(true)
-const error = ref('')
+const {
+  users,
+  loading,
+  error,
+  fetchUsers,
+  handleDeleteUser,
+  formatDate
+} = useUserViewModel()
 
-const locale = computed(() => i18nState.locale)
-
-const fetchUsers = async () => {
-  loading.value = true
-  try {
-    const response = await axios.get('/api/users/')
-    users.value = response.data
-  } catch (err) {
-    error.value = t('Failed to load user list.')
-  } finally {
-    loading.value = false
-  }
-}
-
-const handleDeleteUser = async (id, username) => {
-  // استخدام دالة الترجمة مع دمج المتغير بشكل مرن وقابل للترجمة الديناميكية
-  const confirmMsg = t('Are you sure you want to delete user {username}?').replace('{username}', username)
-  if (!confirm(confirmMsg)) return
-  try {
-    await axios.delete(`/api/users/${id}/`)
-    users.value = users.value.filter(u => u.id !== id)
-  } catch (err) {
-    alert(err.response?.data?.detail || t('Failed to delete user.'))
-  }
-}
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
-  return date.toLocaleDateString(locale.value === 'ar' ? 'ar-EG' : 'en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  })
+const deleteUser = (id, username) => {
+  handleDeleteUser(id, username, t)
 }
 
 onMounted(() => {
-  fetchUsers()
+  fetchUsers(t)
 })
 </script>
 
@@ -118,7 +91,7 @@ onMounted(() => {
                   <router-link :to="`/users/${u.id}/edit`" class="btn btn-outline btn-sm" style="padding: 0.25rem 0.5rem;">
                     ✏️
                   </router-link>
-                  <button @click="handleDeleteUser(u.id, u.username)" class="btn btn-danger btn-sm" style="padding: 0.25rem 0.5rem;">
+                  <button @click="deleteUser(u.id, u.username)" class="btn btn-danger btn-sm" style="padding: 0.25rem 0.5rem;">
                     🗑️
                   </button>
                 </div>

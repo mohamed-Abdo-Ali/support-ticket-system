@@ -1,32 +1,26 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { auth } from '../auth.js'
+import { useAuthViewModel } from '../viewmodels/useAuthViewModel.js'
 import { i18nState, t } from '../i18n.js'
 
 const router = useRouter()
 const username = ref('')
 const password = ref('')
 const showPassword = ref(false)
-const error = ref('')
-const loading = ref(false)
+
+const { login, loading, error } = useAuthViewModel()
 
 const locale = computed(() => i18nState.locale)
 
 const handleLogin = async () => {
-  error.value = ''
-  loading.value = true
   try {
-    await auth.login(username.value, password.value)
+    await login(username.value, password.value)
     router.push('/')
   } catch (err) {
-    if (err.response && err.response.data && err.response.data.detail) {
-      error.value = err.response.data.detail
-    } else {
+    if (!error.value) {
       error.value = t('Login failed. Please check credentials.')
     }
-  } finally {
-    loading.value = false
   }
 }
 </script>

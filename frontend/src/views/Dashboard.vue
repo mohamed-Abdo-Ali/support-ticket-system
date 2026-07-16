@@ -1,43 +1,20 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
-import axios from 'axios'
 import Chart from 'chart.js/auto'
-import { authState } from '../auth.js'
 import { i18nState, t } from '../i18n.js'
+import { useDashboardViewModel } from '../viewmodels/useDashboardViewModel.js'
 
-const stats = ref({
-  total_tickets: 0,
-  closed_tickets: 0,
-  in_progress_tickets: 0,
-  open_tickets: 0,
-  resolved_tickets: 0,
-  high_priority_tickets: 0,
-  Medium_priority_tickets: 0,
-  Low_priority_tickets: 0,
-  category_labels: [],
-  category_counts: [],
-  status_labels: [],
-  status_counts: []
-})
-const loading = ref(true)
-const error = ref('')
+const { stats, loading, error, user, fetchStats } = useDashboardViewModel()
 
 const locale = computed(() => i18nState.locale)
-const user = computed(() => authState.user)
 
 let categoryChartInstance = null
 let statusChartInstance = null
 
-const fetchStats = async () => {
-  loading.value = true
-  try {
-    const response = await axios.get('/api/dashboard/')
-    stats.value = response.data
+const getStats = async () => {
+  await fetchStats(t)
+  if (!error.value) {
     renderCharts()
-  } catch (err) {
-    error.value = t('Failed to load dashboard data.')
-  } finally {
-    loading.value = false
   }
 }
 
@@ -122,7 +99,7 @@ const renderCharts = () => {
 }
 
 onMounted(() => {
-  fetchStats()
+  getStats()
 })
 
 onUnmounted(() => {

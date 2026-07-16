@@ -1,8 +1,8 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
-import { i18nState, t } from '../i18n.js'
+import { t } from '../i18n.js'
+import { useUserViewModel } from '../viewmodels/useUserViewModel.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -10,78 +10,30 @@ const userId = route.params.id
 
 const isEditMode = computed(() => !!userId)
 
-const username = ref('')
-const fullname = ref('')
-const email = ref('')
-const password = ref('')
-const showPassword = ref(false)
-const isStaff = ref(false)
-const isSuperuser = ref(false)
+const {
+  username,
+  fullname,
+  email,
+  password,
+  showPassword,
+  isStaff,
+  isSuperuser,
+  error,
+  loading,
+  fetching,
+  fetchUserDetails,
+  handleSubmit
+} = useUserViewModel()
 
-const error = ref('')
-const loading = ref(false)
-const fetching = ref(false)
-
-const locale = computed(() => i18nState.locale)
-
-const fetchUserDetails = async () => {
-  fetching.value = true
-  try {
-    const response = await axios.get(`/api/users/${userId}/`)
-    username.value = response.data.username
-    fullname.value = response.data.fullname || ''
-    email.value = response.data.email || ''
-    isStaff.value = response.data.is_staff
-    isSuperuser.value = response.data.is_superuser
-  } catch (err) {
-    // ترجمة ديناميكية لرسالة الخطأ باستخدام t()
-    error.value = t('Failed to load user details.')
-  } finally {
-    fetching.value = false
-  }
-}
-
-const handleSubmit = async () => {
-  error.value = ''
-  if (!username.value) {
-    error.value = t('Username is required.')
-    return
-  }
-  if (!isEditMode.value && !password.value) {
-    error.value = t('Password is required.')
-    return
-  }
-
-  loading.value = true
-  const payload = {
-    username: username.value,
-    fullname: fullname.value,
-    email: email.value,
-    is_staff: isStaff.value,
-    is_superuser: isSuperuser.value
-  }
-
-  if (password.value) {
-    payload.password = password.value
-  }
-
-  try {
-    if (isEditMode.value) {
-      await axios.put(`/api/users/${userId}/`, payload)
-    } else {
-      await axios.post('/api/users/', payload)
-    }
+const saveUser = () => {
+  handleSubmit(userId, t, () => {
     router.push('/users')
-  } catch (err) {
-    error.value = err.response?.data?.detail || err.response?.data?.username?.[0] || t('Failed to save changes.')
-  } finally {
-    loading.value = false
-  }
+  })
 }
 
 onMounted(() => {
   if (isEditMode.value) {
-    fetchUserDetails()
+    fetchUserDetails(userId, t)
   }
 })
 </script>
@@ -109,7 +61,7 @@ onMounted(() => {
           <p>{{ $t('Loading...') }}</p>
         </div>
 
-        <form v-else @submit.prevent="handleSubmit">
+        <form v-else @submit.prevent="saveUser">
           <div v-if="error" class="alert alert-danger">
             <span>⚠️</span>
             <span>{{ t(error) || error }}</span>

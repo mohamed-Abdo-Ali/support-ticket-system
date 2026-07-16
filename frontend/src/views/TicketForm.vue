@@ -1,62 +1,26 @@
 <script setup>
-import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
-import { i18nState, t } from '../i18n.js'
+import { t } from '../i18n.js'
+import { useTicketFormViewModel } from '../viewmodels/useTicketFormViewModel.js'
 
 const router = useRouter()
 
-const subject = ref('')
-const description = ref('')
-const priority = ref('Medium')
-const category = ref('General')
-const file = ref(null)
+const {
+  subject,
+  description,
+  priority,
+  category,
+  file,
+  error,
+  loading,
+  handleFileChange,
+  handleSubmit
+} = useTicketFormViewModel()
 
-const error = ref('')
-const loading = ref(false)
-
-const locale = computed(() => i18nState.locale)
-
-const handleFileChange = (e) => {
-  file.value = e.target.files[0]
-}
-
-const handleSubmit = async () => {
-  error.value = ''
-  if (!subject.value || subject.value.length < 5) {
-    error.value = t('Subject must be at least 5 characters.')
-    return
-  }
-
-  loading.value = true
-  try {
-    const formData = new FormData()
-    formData.append('subject', subject.value)
-    formData.append('description', description.value)
-    formData.append('priority', priority.value)
-    formData.append('category', category.value)
-    if (file.value) {
-      formData.append('attachment', file.value)
-    }
-
-    await axios.post('/api/tickets/', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
-    
+const submitForm = () => {
+  handleSubmit(t, () => {
     router.push('/tickets')
-  } catch (err) {
-    if (err.response && err.response.data && err.response.data.detail) {
-      error.value = err.response.data.detail
-    } else if (err.response && err.response.data && err.response.data.subject) {
-      error.value = err.response.data.subject[0]
-    } else {
-      error.value = t('Failed to create ticket.')
-    }
-  } finally {
-    loading.value = false
-  }
+  })
 }
 </script>
 
@@ -80,7 +44,7 @@ const handleSubmit = async () => {
           <span>{{ t(error) || error }}</span>
         </div>
 
-        <form @submit.prevent="handleSubmit">
+        <form @submit.prevent="submitForm">
           <div class="form-group">
             <label class="form-label">{{ $t('Subject') }}</label>
             <input type="text" v-model="subject" class="form-control" required :placeholder="$t('Enter subject detail...')" />

@@ -1,110 +1,42 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
-import axios from 'axios'
-import { authState } from '../auth.js'
-import { i18nState, t } from '../i18n.js'
+import { onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-
+import { t } from '../i18n.js'
+import { useTicketListViewModel } from '../viewmodels/useTicketListViewModel.js'
 
 const route = useRoute()
-const tickets = ref([])
-const count = ref(0)
-const loading = ref(true)
-const error = ref('')
 
-const search = ref('')
-const selectedStatus = ref('')
-const selectedPriority = ref('')
-const page = ref(1)
-
-const locale = computed(() => i18nState.locale)
-const user = computed(() => authState.user)
-
-
-
-const syncFiltersFromRoute = () => {
-  if (route.query.priority) {
-    const p = route.query.priority.toLowerCase()
-    if (p === 'high') selectedPriority.value = 'High'
-    else if (p === 'medium') selectedPriority.value = 'Medium'
-    else if (p === 'low') selectedPriority.value = 'Low'
-  } else {
-    selectedPriority.value = ''
-  }
-
-
-  if (route.query.status) {
-    const s = route.query.status.toLowerCase()
-    // نقوم بالمطابقة مع القيم المكتوبة في الـ <option value="..."> بصفحتك
-    if (s === 'open') selectedStatus.value = 'Open'
-    else if (s === 'in_progress' || s === 'in progress') selectedStatus.value = 'In Progress'
-    else if (s === 'resolved') selectedStatus.value = 'Resolved'
-    else if (s === 'closed') selectedStatus.value = 'Closed'
-  } else {
-    selectedStatus.value = ''
-  }
-
-}
-
-
-const fetchTickets = async () => {
-  loading.value = true
-  try {
-    const params = {
-      page: page.value,
-      q: search.value,
-      status: selectedStatus.value,
-      priority: selectedPriority.value
-    }
-    const response = await axios.get('/api/tickets/', { params })
-    tickets.value = response.data.results
-    count.value = response.data.count
-  } catch (err) {
-    error.value = t('Failed to load tickets.')
-  } finally {
-    loading.value = false
-  }
-}
-
-const applyFilters = () => {
-  page.value = 1
-  fetchTickets()
-}
-
-const resetFilters = () => {
-  search.value = ''
-  selectedStatus.value = ''
-  selectedPriority.value = ''
-  page.value = 1
-  fetchTickets()
-}
-
-const totalPages = computed(() => Math.ceil(count.value / 10))
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
-  return date.toLocaleDateString(locale.value === 'ar' ? 'ar-EG' : 'en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  })
-}
+const {
+  tickets,
+  loading,
+  error,
+  search,
+  selectedStatus,
+  selectedPriority,
+  page,
+  user,
+  totalPages,
+  syncFiltersFromRoute,
+  fetchTickets,
+  applyFilters,
+  resetFilters,
+  formatDate
+} = useTicketListViewModel()
 
 onMounted(() => {
-  syncFiltersFromRoute()
-  fetchTickets()
+  syncFiltersFromRoute(route.query)
+  fetchTickets(t)
 })
 
 watch(page, () => {
-  fetchTickets()
+  fetchTickets(t)
 })
 
 watch(
   () => [route.query.priority, route.query.status], 
   () => {
-    syncFiltersFromRoute()
-    fetchTickets()
+    syncFiltersFromRoute(route.query)
+    fetchTickets(t)
   }
 )
 </script>

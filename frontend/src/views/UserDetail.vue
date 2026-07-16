@@ -1,60 +1,28 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import axios from 'axios'
-import { i18nState, t } from '../i18n.js'
+import { t } from '../i18n.js'
+import { useUserViewModel } from '../viewmodels/useUserViewModel.js'
 
 const route = useRoute()
 const userId = route.params.id
 
-const targetUser = ref(null)
-const userTickets = ref([])
-const loading = ref(true)
-const ticketsLoading = ref(true)
-const error = ref('')
+const {
+  targetUser,
+  userTickets,
+  loading,
+  ticketsLoading,
+  error,
+  fetchUserDetails,
+  fetchUserTickets,
+  formatDate
+} = useUserViewModel()
 
-const locale = computed(() => i18nState.locale)
-
-const fetchUserDetails = async () => {
-  loading.value = true
-  try {
-    const response = await axios.get(`/api/users/${userId}/`)
-    targetUser.value = response.data
-    await fetchUserTickets()
-  } catch (err) {
-    // استخدام الدالة المستوردة t() داخل السكربت للترجمة الديناميكية
-    error.value = t('Failed to load user details.')
-  } finally {
-    loading.value = false
+onMounted(async () => {
+  await fetchUserDetails(userId, t)
+  if (targetUser.value) {
+    fetchUserTickets(userId)
   }
-}
-
-const fetchUserTickets = async () => {
-  ticketsLoading.value = true
-  try {
-    const response = await axios.get('/api/tickets/', {
-      params: { created_by: userId }
-    })
-    userTickets.value = response.data.results
-  } catch (err) {
-    console.error('Failed to load user tickets', err)
-  } finally {
-    ticketsLoading.value = false
-  }
-}
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
-  return date.toLocaleDateString(locale.value === 'ar' ? 'ar-EG' : 'en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  })
-}
-
-onMounted(() => {
-  fetchUserDetails()
 })
 </script>
 
