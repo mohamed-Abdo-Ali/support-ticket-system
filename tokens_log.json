@@ -1,0 +1,29 @@
+{
+  "conversations": [
+    {
+      "id": 1,
+      "title": "التخطيط والاتفاق على هيكل ملف تتبع التوكنز",
+      "input_tokens": 1500,
+      "output_tokens": 750,
+      "timestamp": "2026-07-17 01:22"
+    },
+    {
+      "id": 2,
+      "title": "قراءة وفهم المشروع بالكامل وإعداد تقرير التحليل",
+      "input_tokens": 2200,
+      "output_tokens": 1100,
+      "timestamp": "2026-07-17 01:27"
+    },
+    {
+      "id": 3,
+      "title": "إعداد خطة التحول المعماري إلى Metadata-Driven & MVVM",
+      "input_tokens": 1800,
+      "output_tokens": 1000,
+      "timestamp": "2026-07-17 01:34"
+    }
+  ],
+  "totals": {
+    "total_input_tokens": 5500,
+    "total_output_tokens": 2950
+  }
+}
