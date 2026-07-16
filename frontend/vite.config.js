@@ -2,18 +2,16 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [
     vue(),
-    vueDevTools(),
   ],
-  base: '/static/', // 👈 أضف هذا السطر هنا بدقة ليصبح مسار الملفات صحيحاً لجينغو
+  base: command === 'build' ? '/static/' : '/', // 👈 المسار يكون /static/ فقط عند البناء، أما في التطوير فيكون /
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
-})
+}))

@@ -1,7 +1,8 @@
 import { reactive } from 'vue'
 import axios from 'axios'
 
-const API_URL = 'https://mohammed1ali.pythonanywhere.com'
+// const API_URL = 'https://mohammed1ali.pythonanywhere.com'
+const API_URL = 'http://127.0.0.1:8000/'
 axios.defaults.baseURL = API_URL
 
 export const authState = reactive({
@@ -70,6 +71,11 @@ axios.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
+      // لا تقم بإعادة التوجيه إذا كان الخطأ من مسار تسجيل الدخول نفسه
+      if (originalRequest.url === '/api/token/') {
+        return Promise.reject(error)
+      }
+
       originalRequest._retry = true
       const refreshToken = localStorage.getItem('refresh_token')
       if (refreshToken) {

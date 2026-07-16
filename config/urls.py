@@ -43,9 +43,9 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     
-    # 👇 تعديل: جعل روابط التطبيقات تبدأ بـ api/ لمنع التداخل مع الفرونت اند
-    path('api/', include('tickets.urls')),
-    path('api/', include('replies.urls')),
+    # 👇 تم إرجاعها إلى '' لأن ملفات urls في التطبيقات تحتوي بالفعل على مسار api/
+    path('', include('tickets.urls')),
+    path('', include('replies.urls')),
 
     # 👇 السطر السحري: تشغيل واجهة Vue (index.html) عند الدخول للرابط الرئيسي للموقع مباشرة
     path('', TemplateView.as_view(template_name='index.html'), name='home'),

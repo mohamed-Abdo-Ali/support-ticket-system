@@ -60,6 +60,13 @@ body {
   flex-direction: column;
 }
 
+#app, #app > div {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 100vh;
+}
+
 [lang="ar"] body {
   font-family: 'Cairo', sans-serif;
 }

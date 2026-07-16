@@ -1971,3 +1971,39 @@ msgstr "لا يوجد مستخدمون في النظام."
 
 msgid "closed"
 msgstr "مغلقة"
+msgid "No active account found with the given credentials"
+msgstr "لا يوجد حساب نشط بهذه البيانات"
+
+msgid "Login failed. Please check credentials."
+msgstr "فشل تسجيل الدخول. يرجى التحقق من البيانات."
+
+msgid "Registration successful. Please log in."
+msgstr "تم التسجيل بنجاح. يرجى تسجيل الدخول."
+
+msgid "Username already exists."
+msgstr "اسم المستخدم موجود مسبقاً."
+
+msgid "Username and password are required."
+msgstr "اسم المستخدم وكلمة المرور مطلوبان."
+
+msgid "Subject must be at least 5 characters."
+msgstr "يجب أن يكون الموضوع 5 أحرف على الأقل."
+
+msgid "Support staff and managers cannot create tickets."
+msgstr "موظفو الدعم والمدراء لا يمكنهم إنشاء تذاكر."
+
+msgid "Only support staff can edit tickets."
+msgstr "موظفو الدعم فقط يمكنهم تعديل التذاكر."
+
+msgid "This ticket is closed and cannot be edited by anyone."
+msgstr "هذه التذكرة مغلقة ولا يمكن تعديلها."
+
+msgid "Status field is required for support staff update."
+msgstr "حقل الحالة مطلوب لكي يتمكن موظف الدعم من التحديث."
+
+msgid "Only support staff can delete tickets."
+msgstr "موظفو الدعم فقط يمكنهم حذف التذاكر."
+
+msgid "Tickets must be Closed before they can be deleted."
+msgstr "يجب أن تكون التذاكر مغلقة قبل حذفها."
+
